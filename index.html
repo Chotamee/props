@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ғылыми Зертхана (The Science Lab)</title>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-red: #d32f2f;
+            --primary-red-hover: #b71c1c;
+            --bg-color: #f1f3f6; 
+            --surface-color: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #777777;
+            --border-color: #eaedf1;
+            --shadow-sm: 0 4px 10px rgba(0,0,0,0.05);
+            --shadow-md: 0 8px 25px rgba(0,0,0,0.08);
+            --border-radius-lg: 16px;
+            --border-radius-md: 10px;
+            --border-radius-sm: 6px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden; /* Prevent body scrolling */
+        }
+
+        /* App Container mimicking the browser/app window */
+        .app-window {
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            background-color: var(--bg-color);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Top Header */
+        .top-header {
+            background-color: var(--surface-color);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 2px solid var(--border-color);
+            z-index: 10;
+            flex-shrink: 0;
+        }
+
+        .logo-title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-transform: uppercase;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--text-secondary);
+        }
+
+        .header-icons i {
+            font-size: 18px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .header-icons i:hover {
+            color: var(--primary-red);
+        }
+        
+        .profile-small {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #fce4e4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-red);
+        }
+
+        /* Main Workspace Area */
+        .workspace {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100% - 70px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Left Sidebar (Only visible on Dashboard) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--surface-color);
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 2px solid var(--border-color);
+            height: 100%;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #fce4e4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 2px solid var(--primary-red);
+            color: var(--primary-red);
+            font-size: 30px;
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .logout-btn {
+            font-size: 12px;
+            color: var(--primary-red);
+            cursor: pointer;
+            margin-top: 5px;
+            text-decoration: underline;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: var(--border-radius-sm);
+            transition: all 0.2s;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-item:hover {
+            background-color: #f9f9f9;
+            color: var(--primary-red);
+        }
+
+        .nav-item i {
+            width: 25px;
+            font-size: 16px;
+        }
+
+        .badge {
+            background-color: #f1f1f1;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* Main Content Area */
+        .content-area {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+            height: 100%;
+        }
+
+        /* --- DASHBOARD VIEW --- */
+        #view-dashboard {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr); /* Force 2 rows explicitly */
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            height: 100%; /* Take full available height */
+            max-height: 550px;
+            margin: 0 auto;
+        }
+
+        .module-card {
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between; /* This forces the button to the bottom, eliminating internal scroll */
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%; /* Fully stretch in grid cell */
+        }
+
+        .module-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .module-card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+            justify-content: center;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #fce4e4;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 15px;
+            border: 2px solid var(--primary-red);
+            flex-shrink: 0;
+        }
+
+        .module-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .module-desc {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .btn {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-red-hover);
+        }
+
+        /* --- LOGIN VIEW --- */
+        #view-login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            background-color: var(--surface-color);
+            position: absolute;
+            top: 0; left: 0; z-index: 50;
+        }
+        
+        .login-box {
+            background: var(--surface-color);
+            padding: 40px;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .login-box h2 { margin-bottom: 20px; color: var(--primary-red); }
+        .login-input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid #ccc; border-radius: 8px; font-size: 14px;
+        }
+        .login-msg { margin-top: 15px; font-size: 13px; color: var(--primary-red); }
+        .toggle-auth { margin-top: 15px; font-size: 12px; color: var(--text-secondary); cursor: pointer; text-decoration: underline; }
+
+        /* --- DETAIL VIEWS GENERAL --- */
+        .detail-view {
+            display: none;
+            height: 100%;
+            width: 100%;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .detail-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .detail-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            flex-grow: 1;
+            text-transform: uppercase;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #f1f1f1;
+            color: var(--text-primary);
+        }
+
+        .detail-content {
+            padding: 30px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        /* --- METHODOLOGY GUIDES --- */
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .step-item {
+            display: flex;
+            background-color: #fafafa;
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            color: var(--primary-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fce4e4;
+            border-radius: var(--border-radius-sm);
+            margin-right: 25px;
+            flex-shrink: 0;
+        }
+
+        .step-info {
+            flex-grow: 1;
+        }
+
+        .step-title {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary-red);
+        }
+
+        /* --- PLAGIARISM CHECK --- */
+        .plagiarism-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            height: 100%;
+        }
+
+        .upload-section {
+            border: 2px dashed #ccc;
+            border-radius: var(--border-radius-lg);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            background-color: #fafafa;
+        }
+
+        .upload-title {
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .upload-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .scan-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .status-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+        }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .uniqueness-score {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .report-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .report-list {
+            margin-top: 15px;
+            padding-left: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        .report-list li { margin-bottom: 10px; }
+
+        /* --- DATA & MATH TOOLS --- */
+        .math-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            gap: 20px;
+        }
+
+        .math-card {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .math-title {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group-math {
+            margin-bottom: 15px;
+        }
+        
+        .input-group-math label {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px;
+            color: var(--text-secondary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        select.form-control {
+            appearance: none;
+            background: white url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><path fill="gray" d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+        }
+
+        /* Calculator Styles */
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 20px 0 0 20px;
+            outline: none;
+        }
+        
+        .search-bar button {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 20px 20px 0;
+            cursor: pointer;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .func-btn {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .func-btn.active {
+            background-color: #fce4e4;
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 2px; bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-red); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        .data-table th, .data-table td {
+            text-align: center;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table th { font-weight: 700; color: #555; }
+        
+        /* Query Hub UI Additions */
+        #view-query {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .chat-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        
+        /* --- MEDIA QUERIES FOR RESPONSIVE/MOBILE --- */
+        @media (max-width: 900px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(3, 1fr);
+                height: auto;
+                max-height: none;
+            }
+            .math-layout, .plagiarism-layout {
+                grid-template-columns: 1fr;
+            }
+            .math-card[style*="grid-column"] {
+                grid-column: 1 / 2 !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 0; }
+            .app-window {
+                height: 100vh;
+                border-radius: 0;
+            }
+            .workspace {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                display: none; /* Hide sidebar completely on mobile by default */
+                padding: 15px;
+            }
+            /* Add an active state for mobile sidebar if needed, but for simplicity we rely on the grid on the phone */
+            .header-icons i:first-child { display: none; } /* Hide the 'HERE' plane on tiny screens */
+            
+            .content-area {
+                padding: 15px;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr; /* 1 card per row on mobile */
+                grid-template-rows: auto;
+                gap: 15px;
+            }
+            
+            /* Responsive Methodology steps */
+            .step-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            .step-icon {
+                margin: 0 0 15px 0 !important;
+                order: -1 !important; /* Force to top */
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-window">
+    
+    <!-- Login View (Default View, Unauthenticated) -->
+    <div id="view-login">
+        <div class="login-box">
+            <h2 id="auth-title">Кіру</h2>
+            <input type="text" id="auth-username" class="login-input" placeholder="Логин (Username)">
+            <input type="password" id="auth-password" class="login-input" placeholder="Құпия сөз (Password)">
+            <button class="btn" style="border-radius: 8px;" id="auth-btn" onclick="handleAuth()">Кіру</button>
+            <div id="auth-msg" class="login-msg"></div>
+            <div class="toggle-auth" id="auth-toggle" onclick="toggleAuthMode()">Аккаунтыңыз жоқ па? Тіркелу</div>
+        </div>
+    </div>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="logo-title">
+            ҒЫЛЫМИ ЗЕРТХАНА
+        </div>
+        <div class="header-icons">
+            <i class="fa-solid fa-plane"></i> HERE
+            <i class="fa-regular fa-bell"></i>
+            <div class="profile-small"><i class="fa-solid fa-user"></i></div>
+        </div>
+    </header>
+
+    <div class="workspace">
+        
+        <!-- Sidebar (Main Dashboard Only) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="profile-card">
+                <div class="profile-img">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <!-- Dynamic based on login -->
+                <div class="profile-name" id="display-name">Пайдаланушы</div>
+                <div class="logout-btn" onclick="logout()">Шығу (Logout)</div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-title">МЕНІҢ ЖАРИЯЛАНЫМДАРЫМ</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <span><i class="fa-regular fa-file-lines"></i> Жарияланымдар</span>
+                        <span class="badge">0</span>
+                    </li>
+                    <li class="nav-item">
+                        <span><i class="fa-regular fa-file"></i> Беттер</span>
+                        <span class="badge">0</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <ul class="nav-list">
+                    <li class="nav-item"><span><i class="fa-solid fa-gear"></i> БАПТАУЛАР</span></li>
+                    <li class="nav-item"><span><i class="fa-regular fa-envelope"></i> ХАБАРЛАМАЛАР</span></li>
+                    <li class="nav-item"><span><i class="fa-solid fa-trophy"></i> ЖЕТІСТІКТЕР</span></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Dynamic Content Area -->
+        <main class="content-area" id="main-content-area" style="display:none;">
+            
+            <!-- Dashboard View -->
+            <div id="view-dashboard">
+                <!-- Using height 100% blocks and grid items flex so they stretch without internal scrollbar -->
+                <div class="grid-container">
+                    
+                    <!-- Card 1 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-question"></i></div>
+                            <div class="module-title">Сұрау орталығы</div>
+                            <div class="module-desc">Сұрақтарыңыз бен күмәндарыңызды шешіңіз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-query')">КІРУ</button>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-book-open"></i></div>
+                            <div class="module-title">Әдістемелік нұсқаулықтар</div>
+                            <div class="module-desc">Ғылыми жобалардың әдіснамасы туралы көбірек біліңіз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-methodology')">КІРУ</button>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-folder-open"></i></div>
+                            <div class="module-title">Жобаларды іздеу</div>
+                            <div class="module-desc">Байланысты зерттеу жобаларын табыңыз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-coming-soon')">КІРУ</button>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-percent"></i></div>
+                            <div class="module-title">Антиплагиат</div>
+                            <div class="module-desc">Мәтінді плагиатқа тексеріңіз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-plagiarism')">КІРУ</button>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-calculator"></i></div>
+                            <div class="module-title">Деректер және Математика</div>
+                            <div class="module-desc">Математикалық құралдармен деректерді өңдеңіз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-math')">КІРУ</button>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="module-card">
+                        <div class="module-card-content">
+                            <div class="icon-circle"><i class="fa-solid fa-flask"></i></div>
+                            <div class="module-title">Эксперимент журналдары</div>
+                            <div class="module-desc">Деректерді жүктеп, эксперименттерді бақылаңыз.</div>
+                        </div>
+                        <button class="btn" onclick="showView('view-coming-soon')">КІРУ</button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Detail View: Query Hub -->
+            <div id="view-query" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Сұрау орталығы</h2>
+                </div>
+                <div class="detail-content" style="display: flex; flex-direction: column; height: 100%;">
+                    <div class="chat-container" id="chat-history">
+                        <div style="text-align: center; color: var(--text-secondary); margin-top: 20px;">Ғылыми сұрақтарыңызды осы жерде қойыңыз! (Ask here!)</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="gemini-prompt" class="form-control" placeholder="Мәтін енгізіңіз..." style="border-radius: 20px;">
+                        <button class="btn" style="width: 120px;" onclick="sendQuery()">Жіберу</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail View: Methodology Guides -->
+            <div id="view-methodology" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Ғылыми мақала жазу</h2>
+                </div>
+                <div class="detail-content">
+                    <div class="step-list">
+                        <!-- Step 1 -->
+                        <div class="step-item">
+                            <div class="step-info">
+                                <div class="step-title">1-қадам: Әдебиеттерге шолу</div>
+                                <div class="step-desc">Ғылыми мақаланы құрыңыз және әдебиеттерге шолу жасаңыз.</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                            </div>
+                            <div class="step-icon"><i class="fa-solid fa-pen-fancy"></i></div>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="step-item">
+                            <div class="step-icon" style="margin-right:0; margin-left: 25px;; order: 2;"><i class="fa-solid fa-hand-holding-droplet"></i></div>
+                            <div class="step-info" style="order: 1;">
+                                <div class="step-title">2-қадам: Диссертация құру</div>
+                                <div class="step-desc">Негізгі мақаланы құру үшін тиісті процестерді өлшеңіз.</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 40%;"></div></div>
+                            </div>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="step-item">
+                            <div class="step-info">
+                                <div class="step-title">3-қадам: Әдістемені жобалау</div>
+                                <div class="step-desc">Негізгі модельдерді дайындаңыз және нақты схема құрыңыз.</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 10%;"></div></div>
+                            </div>
+                            <div class="step-icon"><i class="fa-solid fa-computer"></i></div>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="step-item">
+                            <div class="step-info">
+                                <div class="step-title">4-қадам: Жобаны жазу</div>
+                                <div class="step-desc">Ғылыми мақала жасау үшін алғашқы жобаны жазыңыз.</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="step-icon"><i class="fa-regular fa-file-word"></i></div>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="step-item">
+                            <div class="step-info">
+                                <div class="step-title">5-қадам: Өңдеу және пішімдеу</div>
+                                <div class="step-desc">Соңғы өңдеулерді аяқтаңыз және стандартты пішімдеуді қолданыңыз.</div>
+                                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                            </div>
+                            <div class="step-icon"><i class="fa-solid fa-file-signature"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail View: Plagiarism Check -->
+            <div id="view-plagiarism" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Антиплагиат</h2>
+                </div>
+                <div class="detail-content plagiarism-layout">
+                    
+                    <div class="upload-section">
+                        <div class="upload-title">ҚҰЖАТ ЖҮКТЕУ</div>
+                        <div class="upload-text">
+                            Мәтінді осында енгізіңіз. (Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...)
+                        </div>
+                        <button class="btn" style="align-self: flex-start; margin-top: 30px; width: 200px;">ҚҰЖАТ ЖҮКТЕУ</button>
+                    </div>
+
+                    <div class="scan-section">
+                        <div class="module-card" style="padding: 20px;">
+                            <div class="icon-circle" style="width: 60px; height: 60px; font-size: 25px; margin-bottom: 10px;">
+                                <i class="fa-solid fa-percent"></i>
+                            </div>
+                            <button class="btn" style="border-radius: 5px;">СКАНЕРЛЕУ</button>
+                        </div>
+                        
+                        <div class="status-card">
+                            <div class="step-title" style="font-size: 14px;">НӘТИЖЕЛЕР</div>
+                            <div class="status-row">
+                                <div>
+                                    <div style="font-size:12px; color:#777;">Бірегейлік</div>
+                                    <div class="uniqueness-score">96%</div>
+                                </div>
+                                <div>
+                                    <div style="font-size:12px; color:#777; margin-bottom: 5px;">Күйі</div>
+                                    <div class="status-badge">ЖАҚСЫ</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <div class="step-title" style="font-size: 14px;">ЕСЕП</div>
+                            <ul class="report-list">
+                                <li>Мәтін толығымен тексерілді.</li>
+                                <li>Көшіру белгілері табылған жоқ.</li>
+                                <li>Талаптарға сай.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Detail View: Data & Math Tools -->
+            <div id="view-math" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Деректер және Математика</h2>
+                </div>
+                <div class="detail-content">
+                    <div class="math-layout">
+                        
+                        <!-- Top Left: Graphing -->
+                        <div class="math-card" style="grid-column: 1 / 3;">
+                            <div class="math-title">ИНТЕРАКТИВТІ ГРАФИК</div>
+                            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 200px;">
+                                    <div class="input-group-math">
+                                        <label>КІРІСТІРУ ДЕРЕКТЕРІ</label>
+                                        <input type="text" class="form-control" id="chart-data" value="0, 2, 3, 5, 0">
+                                    </div>
+                                    <div class="input-group-math">
+                                        <label>Деректер</label>
+                                        <select class="form-control"><option>Қорытынды</option></select>
+                                    </div>
+                                    <button class="btn" style="border-radius: 5px;" onclick="renderChart()">ГЕНЕРАЦИЯ</button>
+                                </div>
+                                <div style="flex: 2; min-width: 250px;">
+                                    <canvas id="mainChart" style="max-height: 250px; width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Left: Calculator -->
+                        <div class="math-card">
+                            <div class="math-title">ҒЫЛЫМИ КАЛЬКУЛЯТОР</div>
+                            <div class="search-bar">
+                                <input type="text" placeholder="Функцияларды іздеу...">
+                                <button><i class="fa-solid fa-search"></i></button>
+                            </div>
+                            
+                            <div class="math-title" style="margin-top: 20px;">ФУНКЦИЯЛАР</div>
+                            <div class="function-grid">
+                                <div class="func-btn active">Mean</div>
+                                <div class="func-btn">Median</div>
+                                <div class="func-btn">T-test</div>
+                            </div>
+                            
+                            <div style="margin-top: 25px;">
+                                <div class="toggle-row">
+                                    <div style="display: flex; gap: 15px; font-size: 13px;">
+                                        <span>Mean</span><span>Median</span><span>T-test</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                      <input type="checkbox" checked>
+                                      <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-row">
+                                    <div style="display: flex; gap: 15px; font-size: 13px;">
+                                        <span>Media</span><span>L-test</span><span>CT-test</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                      <input type="checkbox">
+                                      <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Right: Dataset Input -->
+                        <div class="math-card" style="overflow-x: auto;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <div class="math-title" style="margin-bottom: 0;">ДЕРЕКТЕР ЖИЫНТЫҒЫ</div>
+                                <button class="btn" style="width: auto; padding: 5px 12px; font-size: 11px; border-radius: 5px;">+ ROLE</button>
+                            </div>
+                            <table class="data-table">
+                                <thead>
+                                    <tr><th>ID</th><th>Data 1</th><th>Data 2</th><th>Data 3</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>1</td><td>90</td><td>183</td><td>120</td></tr>
+                                    <tr><td>2</td><td>96</td><td>199</td><td>120</td></tr>
+                                    <tr><td>3</td><td>96</td><td>183</td><td>120</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail View: Coming Soon -->
+            <div id="view-coming-soon" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Әзірленуде</h2>
+                </div>
+                <div class="detail-content" style="display: flex; align-items: center; justify-content: center;">
+                    <div style="text-align: center; color: var(--text-secondary);">
+                        <i class="fa-solid fa-person-digging" style="font-size: 50px; margin-bottom: 20px; color: var(--primary-red);"></i>
+                        <h3>Жақында</h3>
+                        <p>Бұл модуль әзірлену үстінде.</p>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // --- AUTHENTICATION LOGIC ---
+    let isLoginMode = true;
+    
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('auth-title').innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
+        document.getElementById('auth-btn').innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
+        document.getElementById('auth-toggle').innerText = isLoginMode ? 'Аккаунтыңыз жоқ па? Тіркелу' : 'Аккаунтыңыз бар ма? Кіру';
+        document.getElementById('auth-msg').innerText = '';
+    }
+
+    function handleAuth() {
+        const user = document.getElementById('auth-username').value.trim();
+        const pass = document.getElementById('auth-password').value.trim();
+        const msgBox = document.getElementById('auth-msg');
+        
+        if(!user || !pass) {
+            msgBox.innerText = "Барлық өрістерді толтырыңыз.";
+            return;
+        }
+        
+        msgBox.innerText = "Күте тұрыңыз...";
+        
+        try {
+            if(isLoginMode) {
+                google.script.run.withSuccessHandler(onAuthResponse).authenticateUser(user, pass);
+            } else {
+                google.script.run.withSuccessHandler(onAuthResponse).registerUser(user, pass);
+            }
+        } catch(e) {
+            // Local fallback
+            setTimeout(() => {
+                onAuthResponse({success: true, username: user}); // force success for mockup
+            }, 500);
+        }
+    }
+    
+    function onAuthResponse(res) {
+        if(res.success) {
+            document.getElementById('view-login').style.display = 'none';
+            document.getElementById('main-content-area').style.display = 'block';
+            document.getElementById('display-name').innerText = res.username || "Пайдаланушы";
+            showView('view-dashboard');
+        } else {
+            document.getElementById('auth-msg').innerText = res.message || "Қате орын алды.";
+        }
+    }
+    
+    function logout() {
+        document.getElementById('auth-username').value = '';
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-msg').innerText = '';
+        document.getElementById('view-login').style.display = 'flex';
+        document.getElementById('main-content-area').style.display = 'none';
+    }
+
+
+    // --- VIEW NAVIGATION LOGIC ---
+    const allViews = [
+        'view-dashboard', 'view-query', 'view-methodology', 
+        'view-plagiarism', 'view-math', 'view-coming-soon'
+    ];
+
+    function showView(viewId) {
+        allViews.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) el.style.display = 'none';
+        });
+
+        const target = document.getElementById(viewId);
+        if(target) target.style.display = 'flex'; 
+
+        if(viewId === 'view-dashboard') {
+            document.getElementById(sidebar).style.display = window.innerWidth > 768 ? 'flex' : 'none';
+        } else {
+            document.getElementById('sidebar').style.display = 'none';
+        }
+    }
+
+    // Chart.js Setup for Math Tools
+    let myChart = null;
+    function renderChart() {
+        const inputData = document.getElementById('chart-data').value;
+        const vals = inputData.split(',').map(Number).filter(n => !isNaN(n));
+        const labels = vals.map((_, i) => i + 1);
+
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        if (myChart) myChart.destroy();
+
+        myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Динамикалық график',
+                    data: vals,
+                    borderColor: '#d32f2f',
+                    backgroundColor: 'rgba(211, 47, 47, 0.2)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'top' } }
+            }
+        });
+    }
+
+    // Call render once to init chart
+    renderChart();
+
+    // Query Hub Gemini logic
+    function sendQuery() {
+        const promptInput = document.getElementById('gemini-prompt');
+        const prompt = promptInput.value.trim();
+        if (!prompt) return;
+
+        const chatContainer = document.getElementById('chat-history');
+        
+        const userMsg = document.createElement('div');
+        userMsg.style.cssText = "background:#e3f2fd; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-end; max-width:80%; margin-left:auto;";
+        userMsg.textContent = "Сіз: " + prompt;
+        chatContainer.appendChild(userMsg);
+        
+        promptInput.value = '';
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        try {
+            google.script.run.withSuccessHandler((response) => {
+                const botMsg = document.createElement('div');
+                botMsg.style.cssText = "background:white; border:1px solid #ccc; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-start; max-width:80%;";
+                botMsg.textContent = "Ассистент: " + response;
+                chatContainer.appendChild(botMsg);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }).askGemini(prompt);
+        } catch(e) {
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.style.cssText = "background:white; border:1px solid #ccc; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-start; max-width:80%;";
+                botMsg.textContent = "Ассистент: Бұл сервермен байланыспағандықтан шыққан симуляция-жауап.";
+                chatContainer.appendChild(botMsg);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 500);
+        }
+    }
+</script>
+</body>
+</html>
