@@ -28,6 +28,7 @@
     <!-- Top Header -->
     <header class="top-header">
         <div class="logo-title">
+            <i class="fa-solid fa-bars mobile-menu-btn" onclick="toggleSidebar()"></i>
             ҒЫЛЫМИ ЗЕРТХАНА
         </div>
         <div class="header-icons">
@@ -37,7 +38,9 @@
         </div>
     </header>
 
+    <!-- Main Workspace Area -->
     <div class="workspace">
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
         
         <!-- Sidebar (Main Dashboard Only) -->
         <aside class="sidebar" id="sidebar">

@@ -102,9 +102,10 @@
         .workspace {
             display: flex;
             flex-grow: 1;
-            height: calc(100% - 70px);
+            height: calc(100% - 70px); /* Restored for desktop scaling */
             position: relative;
             overflow: hidden;
+            min-height: 0; /* Critical for inner scrolling in flex */
         }
 
         /* Left Sidebar (Only visible on Dashboard) */
@@ -118,6 +119,15 @@
             height: 100%;
             overflow-y: auto;
             flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--primary-red);
+            margin-right: 15px;
         }
 
         .profile-card {
@@ -209,13 +219,17 @@
             flex-grow: 1;
             padding: 30px;
             overflow-y: auto;
+            overflow-x: hidden;
             position: relative;
-            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            width: 100%;
         }
 
         /* --- DASHBOARD VIEW --- */
         #view-dashboard {
-            height: 100%;
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -228,7 +242,7 @@
             gap: 20px;
             width: 100%;
             max-width: 900px;
-            height: 100%; /* Take full available height */
+            flex-grow: 1;
             max-height: 550px;
             margin: 0 auto;
         }
@@ -289,6 +303,7 @@
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
@@ -347,7 +362,7 @@
         /* --- DETAIL VIEWS GENERAL --- */
         .detail-view {
             display: none;
-            height: 100%;
+            flex-grow: 1;
             width: 100%;
             background-color: var(--surface-color);
             border-radius: var(--border-radius-lg);
@@ -762,18 +777,11 @@
         }
         
         /* --- MEDIA QUERIES FOR RESPONSIVE/MOBILE --- */
-        @media (max-width: 900px) {
+        @media (max-width: 1024px) {
             .grid-container {
                 grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: repeat(3, 1fr);
-                height: auto;
                 max-height: none;
-            }
-            .math-layout, .plagiarism-layout {
-                grid-template-columns: 1fr;
-            }
-            .math-card[style*="grid-column"] {
-                grid-column: 1 / 2 !important;
+                height: auto;
             }
         }
 
@@ -783,35 +791,95 @@
                 height: 100vh;
                 border-radius: 0;
             }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+
             .workspace {
                 flex-direction: column;
             }
+
             .sidebar {
-                width: 100%;
-                height: auto;
-                display: none; /* Hide sidebar completely on mobile by default */
-                padding: 15px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 280px;
+                z-index: 100;
+                transform: translateX(-100%);
+                box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+                border-right: none;
             }
-            /* Add an active state for mobile sidebar if needed, but for simplicity we rely on the grid on the phone */
-            .header-icons i:first-child { display: none; } /* Hide the 'HERE' plane on tiny screens */
-            
+
+            .sidebar.active {
+                transform: translateX(0);
+                display: flex !important;
+            }
+
+            /* Overlay for sidebar when active */
+            .sidebar-overlay {
+                display: none;
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 90;
+                backdrop-filter: blur(2px);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+
             .content-area {
-                padding: 15px;
+                padding: 20px 15px 40px 15px; /* Safely padded for mobile */
             }
 
             .grid-container {
-                grid-template-columns: 1fr; /* 1 card per row on mobile */
-                grid-template-rows: auto;
-                gap: 15px;
+                grid-template-columns: 1fr;
+                gap: 20px; /* Improved spacing between cards */
+                max-height: none;
             }
-            
-            /* Responsive Methodology steps */
+
+            .module-card {
+                padding: 30px 20px;
+                min-height: 220px;
+            }
+
+            .plagiarism-layout, .math-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .math-card[style*="grid-column"] {
+                grid-column: 1 / 2 !important;
+            }
+
             .step-item {
                 flex-direction: column;
                 text-align: center;
+                gap: 15px;
             }
+
             .step-icon {
-                margin: 0 0 15px 0 !important;
-                order: -1 !important; /* Force to top */
+                margin: 0 auto !important;
             }
+
+            .page-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+
+            .chat-input-area {
+                flex-direction: column;
+            }
+            .chat-input-area button {
+                width: 100% !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-title { font-size: 14px; }
+            .header-icons { gap: 10px; }
+            .header-icons i:not(.profile-small i) { display: none; }
+            .detail-header { padding: 15px; }
+            .detail-header h2 { font-size: 14px; }
+            .step-title { font-size: 13px; }
         }

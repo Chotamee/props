@@ -59,6 +59,10 @@ function handleAuth() {
 
 function onAuthResponse(res) {
     if(res && res.success) {
+        // Save to auto-login
+        localStorage.setItem('savedUsername', document.getElementById('auth-username').value.trim());
+        localStorage.setItem('savedPassword', document.getElementById('auth-password').value.trim());
+
         document.getElementById('view-login').style.display = 'none';
         document.getElementById('display-name').innerText = res.username || "Пайдаланушы";
         if(res.id) document.getElementById('display-id').innerText = `ID: ${res.id}`;
@@ -79,6 +83,9 @@ function onAuthResponse(res) {
 }
 
 function logout() {
+    localStorage.removeItem('savedUsername');
+    localStorage.removeItem('savedPassword');
+    
     document.getElementById('display-name').innerText = "Пайдаланушы";
     document.getElementById('display-id').innerText = "ID: Белгісіз";
     document.getElementById('login-trigger-btn').style.display = 'block';
@@ -108,13 +115,51 @@ function showView(viewId) {
     const target = document.getElementById(viewId);
     if(target) target.style.display = 'flex'; 
 
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
     if(viewId === 'view-dashboard') {
-        const sidebar = document.getElementById('sidebar');
-        if(sidebar) sidebar.style.display = window.innerWidth > 768 ? 'flex' : 'none';
+        if(sidebar) sidebar.style.display = ''; // Let CSS media queries handle display state
     } else {
-        const sidebar = document.getElementById('sidebar');
         if(sidebar) sidebar.style.display = 'none';
     }
+
+    // Always close mobile sidebar when switching views
+    if(sidebar) sidebar.classList.remove('active');
+    if(overlay) overlay.classList.remove('active');
+}
+
+window.addEventListener('resize', () => {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (!sidebar) return;
+    
+    // If resized to desktop, clean up mobile menu states
+    if (window.innerWidth > 768) {
+        sidebar.classList.remove('active');
+        if (overlay) overlay.classList.remove('active');
+        
+        // Re-evaluate display based on active view
+        const dashboard = document.getElementById('view-dashboard');
+        if (dashboard && dashboard.style.display !== 'none') {
+            sidebar.style.display = ''; // Let CSS handle it
+        } else {
+            sidebar.style.display = 'none';
+        }
+    } else {
+        // If resized to mobile, rely on CSS 
+        const dashboard = document.getElementById('view-dashboard');
+        if (dashboard && dashboard.style.display !== 'none') {
+            sidebar.style.display = ''; 
+        }
+    }
+});
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if(sidebar) sidebar.classList.toggle('active');
+    if(overlay) overlay.classList.toggle('active');
 }
 
 // Chart.js Setup for Math Tools
@@ -457,3 +502,31 @@ function saveProgressToServer() {
       .then(data => console.log("Progress save:", data))
       .catch(e => console.error("Progress save error:", e));
 }
+
+// Auto-login check on load
+document.addEventListener('DOMContentLoaded', () => {
+    const savedUser = localStorage.getItem('savedUsername');
+    const savedPass = localStorage.getItem('savedPassword');
+    if (savedUser && savedPass) {
+        document.getElementById('auth-username').value = savedUser;
+        document.getElementById('auth-password').value = savedPass;
+        isLoginMode = true;
+        // Don't show modal, just fetch in background
+        console.log("Checking saved credentials...");
+        fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'login', username: savedUser, password: savedPass })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data && data.success) {
+                onAuthResponse(data);
+            } else {
+                localStorage.removeItem('savedUsername');
+                localStorage.removeItem('savedPassword');
+            }
+        })
+        .catch(e => console.error("Auto-login error:", e));
+    }
+});
