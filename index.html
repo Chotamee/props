@@ -58,9 +58,9 @@
             <div class="nav-section">
                 <div class="nav-title">МЕНІҢ ЖАРИЯЛАНЫМДАРЫМ</div>
                 <ul class="nav-list">
-                    <li class="nav-item">
+                    <li class="nav-item" onclick="showView('view-publications')" style="cursor: pointer;">
                         <span><i class="fa-regular fa-file-lines"></i> Жарияланымдар</span>
-                        <span class="badge">0</span>
+                        <span class="badge" id="publications-badge">0</span>
                     </li>
                     <li class="nav-item">
                         <span><i class="fa-regular fa-file"></i> Беттер</span>
@@ -391,6 +391,41 @@
                             </table>
                         </div>
 
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detail View: Publications -->
+            <div id="view-publications" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2>Менің жарияланымдарым</h2>
+                </div>
+                <!-- Content Area for Publications -->
+                <div class="detail-content" style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+                    
+                    <!-- Publications Actions -->
+                    <div class="publications-actions">
+                        <div class="upload-area-compact" id="upload-area">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                            <span>Файлды осында сүйреңіз немесе <span onclick="document.getElementById('file-input').click()" style="color: var(--primary-red); cursor: pointer; font-weight: bold; text-decoration: underline;">таңдаңыз</span></span>
+                            <input type="file" id="file-input" style="display: none;">
+                        </div>
+                        <button class="btn btn-secondary" onclick="manualRefreshPublications()" style="width: auto; height: 100%; display: flex; align-items: center; gap: 8px; background: #eee; color: #333; border: 1px solid #ccc;">
+                            <i class="fa-solid fa-rotate"></i> Жаңарту
+                        </button>
+                    </div>
+                    <div id="upload-status" style="font-size: 13px; font-weight: 600; text-align: center; margin-top: -10px;"></div>
+
+                    <!-- Files List -->
+                    <div>
+                        <h3 style="margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">Файлдар тізімі</h3>
+                        <div class="files-list" id="files-list">
+                            <!-- Populated dynamically -->
+                            <div style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">
+                                Файлдар жүктелген жоқ.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

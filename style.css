@@ -418,6 +418,85 @@
             margin: 0 auto;
         }
         
+        /* --- UPLOAD AREA --- */
+        .publications-actions {
+            display: flex;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .upload-area-compact {
+            flex-grow: 1;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: #fafafa;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .upload-area-compact i {
+            font-size: 24px;
+            color: var(--primary-red);
+        }
+
+        .upload-area-compact:hover, .upload-area-compact.dragover {
+            border-color: var(--primary-red);
+            background-color: #fce4e4;
+        }
+
+        .files-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+            max-height: 400px;
+            padding-right: 10px;
+        }
+
+        .file-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius-md);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-info i {
+            font-size: 24px;
+            color: var(--primary-red);
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .file-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
         .step-item {
             display: flex;
             background-color: #fafafa;
