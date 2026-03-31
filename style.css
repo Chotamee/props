@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
             --primary-red: #d32f2f;
@@ -410,9 +410,17 @@
             padding: 20px;
             align-items: center;
             border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .step-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
         }
 
         .step-icon {
+            transition: color 0.2s, background-color 0.2s;
             width: 60px;
             height: 60px;
             font-size: 30px;
@@ -681,6 +689,56 @@
         }
         
         .data-table th { font-weight: 700; color: #555; }
+        
+        .page-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            padding-bottom: 20px;
+        }
+        .page-item {
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-md);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .page-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-red);
+            box-shadow: var(--shadow-sm);
+        }
+        .page-item.completed {
+            border-color: #4caf50;
+            background-color: #f1f8f1;
+        }
+        .page-item .check {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #4caf50;
+            font-size: 12px;
+            display: none;
+        }
+        .page-item.completed .check {
+            display: block;
+        }
+        .page-number {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 5px;
+        }
+        .page-item.completed .page-number {
+            color: #4caf50;
+        }
+        .page-name {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
         
         /* Query Hub UI Additions */
         #view-query {

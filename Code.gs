@@ -1,4 +1,4 @@
-const SHEET_ID = 'YOUR_GOOGLE_SHEET_ID'; // Replace with your actual Spreadsheet ID
+const SHEET_ID = '1z9Xi8qHqDZ7QOHiI0D6SefqBkVmN6vmf-B-_xyZWtIY'; // Updated with your actual ID extracted from the URL
 const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // Replace with your actual Gemini API Key
 
 function doGet(e) {
@@ -24,6 +24,9 @@ function doPost(e) {
         break;
       case 'ask_gemini':
         result = { success: true, response: askGemini(data.prompt) };
+        break;
+      case 'save_progress':
+        result = saveProgress(data.username, data.progress);
         break;
       default:
         result = { success: false, message: "Белгісіз әрекет (Unknown action)." };
@@ -90,7 +93,7 @@ function authenticateUser(username, password) {
   
   // Skip header if it exists
   for (let i = 0; i < users.length; i++) {
-    if (users[i][0] === username && users[i][1] === password) {
+    if (String(users[i][0]) === String(username) && String(users[i][1]) === String(password)) {
       // ID is at index 2
       let id = users[i][2];
       if (!id) {
@@ -100,7 +103,8 @@ function authenticateUser(username, password) {
         const sheet = ss.getSheetByName('Users');
         sheet.getRange(i + 1, 3).setValue(id); // row is i+1, column is 3 (1-indexed)
       }
-      return { success: true, username: username, id: id };
+      const progress = getProgress(username);
+      return { success: true, username: username, id: String(id), progress: progress };
     }
   }
   return { success: false, message: "Қате логин немесе құпия сөз (Invalid login or password)." };
@@ -117,7 +121,7 @@ function registerUser(username, password) {
   const users = getFromSheet('Users');
   
   for (let i = 0; i < users.length; i++) {
-    if (users[i][0] === username) {
+    if (String(users[i][0]) === String(username)) {
       return { success: false, message: "Мұндай қолданушы бар (Username already exists)." };
     }
   }
@@ -161,4 +165,50 @@ function askGemini(prompt) {
   } catch (error) {
     return "Қате (Error): " + error.toString();
   }
+}
+
+/**
+ * Retrieves the user's methodology progress
+ */
+function getProgress(username) {
+  const data = getFromSheet('Progress');
+  for (let i = 0; i < data.length; i++) {
+    if (String(data[i][0]) === String(username)) {
+      try {
+        return JSON.parse(data[i][1]);
+      } catch(e) {
+        return {};
+      }
+    }
+  }
+  return {};
+}
+
+/**
+ * Saves the user's methodology progress
+ */
+function saveProgress(username, progress) {
+  if (!username) return { success: false, message: "Сақтау үшін кіру қажет." };
+  
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let sheet = ss.getSheetByName('Progress');
+  if (!sheet) {
+    sheet = ss.insertSheet('Progress');
+    sheet.appendRow(['Username', 'ProgressData']);
+  }
+  
+  const data = sheet.getDataRange().getValues();
+  let found = false;
+  // Skip header if it exists, assuming first row is header
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][0]) === String(username)) {
+      sheet.getRange(i + 1, 2).setValue(JSON.stringify(progress));
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    sheet.appendRow([username, JSON.stringify(progress)]);
+  }
+  return { success: true, message: "Прогресс сақталды." };
 }

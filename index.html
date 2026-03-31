@@ -172,51 +172,83 @@
                 <div class="detail-content">
                     <div class="step-list">
                         <!-- Step 1 -->
-                        <div class="step-item">
+                        <div class="step-item" id="step-item-0" onclick="openCourse(0)">
                             <div class="step-info">
                                 <div class="step-title">1-қадам: Әдебиеттерге шолу</div>
                                 <div class="step-desc">Ғылыми мақаланы құрыңыз және әдебиеттерге шолу жасаңыз.</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 100%;"></div></div>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-0" style="width: 0%;"></div></div>
                             </div>
                             <div class="step-icon"><i class="fa-solid fa-pen-fancy"></i></div>
                         </div>
                         <!-- Step 2 -->
-                        <div class="step-item">
-                            <div class="step-icon" style="margin-right:0; margin-left: 25px;; order: 2;"><i class="fa-solid fa-hand-holding-droplet"></i></div>
-                            <div class="step-info" style="order: 1;">
+                        <div class="step-item" id="step-item-1" onclick="openCourse(1)">
+                            <div class="step-info">
                                 <div class="step-title">2-қадам: Диссертация құру</div>
                                 <div class="step-desc">Негізгі мақаланы құру үшін тиісті процестерді өлшеңіз.</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 40%;"></div></div>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-1" style="width: 0%;"></div></div>
                             </div>
+                            <div class="step-icon"><i class="fa-solid fa-hand-holding-droplet"></i></div>
                         </div>
                         <!-- Step 3 -->
-                        <div class="step-item">
+                        <div class="step-item" id="step-item-2" onclick="openCourse(2)">
                             <div class="step-info">
                                 <div class="step-title">3-қадам: Әдістемені жобалау</div>
                                 <div class="step-desc">Негізгі модельдерді дайындаңыз және нақты схема құрыңыз.</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 10%;"></div></div>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-2" style="width: 0%;"></div></div>
                             </div>
                             <div class="step-icon"><i class="fa-solid fa-computer"></i></div>
                         </div>
                         <!-- Step 4 -->
-                        <div class="step-item">
+                        <div class="step-item" id="step-item-3" onclick="openCourse(3)">
                             <div class="step-info">
                                 <div class="step-title">4-қадам: Жобаны жазу</div>
                                 <div class="step-desc">Ғылыми мақала жасау үшін алғашқы жобаны жазыңыз.</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-3" style="width: 0%;"></div></div>
                             </div>
                             <div class="step-icon"><i class="fa-regular fa-file-word"></i></div>
                         </div>
                         <!-- Step 5 -->
-                        <div class="step-item">
+                        <div class="step-item" id="step-item-4" onclick="openCourse(4)">
                             <div class="step-info">
                                 <div class="step-title">5-қадам: Өңдеу және пішімдеу</div>
                                 <div class="step-desc">Соңғы өңдеулерді аяқтаңыз және стандартты пішімдеуді қолданыңыз.</div>
-                                <div class="progress-bar"><div class="progress-fill" style="width: 0%;"></div></div>
+                                <div class="progress-bar"><div class="progress-fill" id="progress-4" style="width: 0%;"></div></div>
                             </div>
                             <div class="step-icon"><i class="fa-solid fa-file-signature"></i></div>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Detail View: Course Content -->
+            <div id="view-course" class="detail-view">
+                <div class="detail-header">
+                    <button class="back-btn" id="course-back-btn" onclick="handleCourseBack()"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2 id="course-title">Курс бөлімі</h2>
+                </div>
+                <div class="detail-content" style="display: flex; flex-direction: column; height: 100%;">
+                    
+                    <!-- Page List Selection -->
+                    <div id="course-page-list" style="display: block;">
+                        <p style="margin-bottom: 20px; color: var(--text-secondary);">Оқығыңыз келетін бетті таңдаңыз:</p>
+                        <div class="page-grid" id="page-grid-items">
+                            <!-- Page items generated here -->
+                        </div>
+                    </div>
+
+                    <!-- Actual Page Content -->
+                    <div id="course-page-content" style="display: none; flex-direction: column; height: 100%;">
+                        <div style="flex-grow: 1; overflow-y: auto; padding-right: 15px;">
+                            <div id="course-text" style="font-size: 15px; line-height: 1.6; color: var(--text-primary);">
+                                <!-- Course text injected here -->
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px; flex-shrink: 0; display: flex; gap: 15px;">
+                            <button id="course-next-btn" class="btn" style="width: 100%;" onclick="nextPage()">Келесі бет <i class="fa-solid fa-arrow-right"></i></button>
+                            <button id="course-finish-btn" class="btn" style="width: 100%; display: none;" onclick="finishSection()">Бөлімді аяқтау <i class="fa-solid fa-check"></i></button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
