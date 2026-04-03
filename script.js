@@ -27,16 +27,16 @@ function handleAuth() {
     const user = document.getElementById('auth-username').value.trim();
     const pass = document.getElementById('auth-password').value.trim();
     const msgBox = document.getElementById('auth-msg');
-    
-    if(!user || !pass) {
+
+    if (!user || !pass) {
         msgBox.innerText = "Барлық өрістерді толтырыңыз.";
         return;
     }
-    
+
     msgBox.innerText = "Күте тұрыңыз...";
-    
+
     const action = isLoginMode ? 'login' : 'register';
-    
+
     fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -44,38 +44,38 @@ function handleAuth() {
         },
         body: JSON.stringify({ action: action, username: user, password: pass })
     })
-    .then(response => {
-        console.log("Fetch Raw Response:", response);
-        return response.json();
-    })
-    .then(data => {
-        console.log("Fetch Parsed Data:", data);
-        onAuthResponse(data);
-    })
-    .catch(error => {
-        console.error("Fetch Error:", error);
-        msgBox.innerText = "Қате орын алды (Сервермен байланыс жоқ).";
-    });
+        .then(response => {
+            console.log("Fetch Raw Response:", response);
+            return response.json();
+        })
+        .then(data => {
+            console.log("Fetch Parsed Data:", data);
+            onAuthResponse(data);
+        })
+        .catch(error => {
+            console.error("Fetch Error:", error);
+            msgBox.innerText = "Қате орын алды (Сервермен байланыс жоқ).";
+        });
 }
 
 function onAuthResponse(res) {
-    if(res && res.success) {
+    if (res && res.success) {
         // Save to auto-login
         localStorage.setItem('savedUsername', document.getElementById('auth-username').value.trim());
         localStorage.setItem('savedPassword', document.getElementById('auth-password').value.trim());
 
         document.getElementById('view-login').style.display = 'none';
         document.getElementById('display-name').innerText = res.username || "Пайдаланушы";
-        if(res.id) document.getElementById('display-id').innerText = `ID: ${res.id}`;
-        
-        if(res.progress && typeof res.progress === 'object' && !Array.isArray(res.progress)) {
+        if (res.id) document.getElementById('display-id').innerText = `ID: ${res.id}`;
+
+        if (res.progress && typeof res.progress === 'object' && !Array.isArray(res.progress)) {
             userMethodologyProgress = res.progress;
             updateProgressUI();
         } else {
             userMethodologyProgress = {};
             updateProgressUI();
         }
-        
+
         document.getElementById('login-trigger-btn').style.display = 'none';
         document.getElementById('logout-btn').style.display = 'block';
 
@@ -89,16 +89,16 @@ function onAuthResponse(res) {
 function logout() {
     localStorage.removeItem('savedUsername');
     localStorage.removeItem('savedPassword');
-    
+
     document.getElementById('display-name').innerText = "Пайдаланушы";
     document.getElementById('display-id').innerText = "ID: Белгісіз";
     document.getElementById('login-trigger-btn').style.display = 'block';
     document.getElementById('logout-btn').style.display = 'none';
-    
+
     document.getElementById('auth-username').value = '';
     document.getElementById('auth-password').value = '';
     document.getElementById('auth-msg').innerText = '';
-    
+
     userMethodologyProgress = {};
     updateProgressUI();
 }
@@ -106,18 +106,18 @@ function logout() {
 
 // --- VIEW NAVIGATION LOGIC ---
 const allViews = [
-    'view-dashboard', 'view-query', 'view-methodology', 
-    'view-course', 'view-plagiarism', 'view-math', 'view-coming-soon', 'view-publications'
+    'view-dashboard', 'view-query', 'view-methodology',
+    'view-course', 'view-plagiarism', 'view-math', 'view-coming-soon', 'view-publications', 'view-search'
 ];
 
 function showView(viewId) {
     allViews.forEach(id => {
         const el = document.getElementById(id);
-        if(el) el.style.display = 'none';
+        if (el) el.style.display = 'none';
     });
 
     const target = document.getElementById(viewId);
-    if(target) target.style.display = 'flex'; 
+    if (target) target.style.display = 'flex';
 
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
@@ -127,27 +127,27 @@ function showView(viewId) {
         fetchUserPublications();
     }
 
-    if(viewId === 'view-dashboard') {
-        if(sidebar) sidebar.style.display = ''; // Let CSS media queries handle display state
+    if (viewId === 'view-dashboard') {
+        if (sidebar) sidebar.style.display = ''; // Let CSS media queries handle display state
     } else {
-        if(sidebar) sidebar.style.display = 'none';
+        if (sidebar) sidebar.style.display = 'none';
     }
 
     // Always close mobile sidebar when switching views
-    if(sidebar) sidebar.classList.remove('active');
-    if(overlay) overlay.classList.remove('active');
+    if (sidebar) sidebar.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
 }
 
 window.addEventListener('resize', () => {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     if (!sidebar) return;
-    
+
     // If resized to desktop, clean up mobile menu states
     if (window.innerWidth > 768) {
         sidebar.classList.remove('active');
         if (overlay) overlay.classList.remove('active');
-        
+
         // Re-evaluate display based on active view
         const dashboard = document.getElementById('view-dashboard');
         if (dashboard && dashboard.style.display !== 'none') {
@@ -159,7 +159,7 @@ window.addEventListener('resize', () => {
         // If resized to mobile, rely on CSS 
         const dashboard = document.getElementById('view-dashboard');
         if (dashboard && dashboard.style.display !== 'none') {
-            sidebar.style.display = ''; 
+            sidebar.style.display = '';
         }
     }
 });
@@ -167,8 +167,8 @@ window.addEventListener('resize', () => {
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebar-overlay');
-    if(sidebar) sidebar.classList.toggle('active');
-    if(overlay) overlay.classList.toggle('active');
+    if (sidebar) sidebar.classList.toggle('active');
+    if (overlay) overlay.classList.toggle('active');
 }
 
 // Chart.js Setup for Math Tools
@@ -216,19 +216,132 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Query Hub Gemini logic
+let chatFontSizeIndex = 1; // 0: small, 1: normal, 2: large, 3: xlarge
+const fontClasses = ['chat-font-small', 'chat-font-normal', 'chat-font-large', 'chat-font-xlarge'];
+
+function adjustChatFontSize(delta) {
+    const chatContainer = document.getElementById('chat-history');
+    if (!chatContainer) return;
+
+    chatContainer.classList.remove(fontClasses[chatFontSizeIndex]);
+    chatFontSizeIndex = Math.max(0, Math.min(fontClasses.length - 1, chatFontSizeIndex + delta));
+    chatContainer.classList.add(fontClasses[chatFontSizeIndex]);
+    localStorage.setItem('chatFontSizeIndex', chatFontSizeIndex);
+}
+
+function formatMarkdown(text) {
+    // Simple bold
+    text = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+    // Simple links [text](url)
+    text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" class="project-link">$1</a>');
+
+    // Simple lists (detecting blocks to wrap in <ul>)
+    const lines = text.split('\n');
+    let inList = false;
+    let formatted = lines.map(line => {
+        if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+            let res = (inList ? '' : '<ul style="margin-top:5px; padding-left:20px;">') + `<li>${line.trim().substring(2)}</li>`;
+            inList = true;
+            return res;
+        } else {
+            let res = (inList ? '</ul>' : '') + line;
+            inList = false;
+            return res;
+        }
+    }).join('\n');
+    if (inList) formatted += '</ul>';
+
+    return formatted.replace(/\n/g, '<br>');
+}
+
+function searchProjects() {
+    const topicInput = document.getElementById('search-topic');
+    const topic = topicInput.value.trim();
+    if (!topic) return;
+
+    const resultsContainer = document.getElementById('search-results-container');
+    resultsContainer.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+            <i class="fa-solid fa-flask-vial fa-spin" style="font-size: 40px; color: var(--primary-red); margin-bottom: 20px;"></i>
+            <div style="color: var(--text-primary); font-weight: 600; font-size: 16px;">Ғылыми мәліметтер ізделуде...</div>
+            <div style="color: var(--text-secondary); font-size: 13px; margin-top: 8px;">Gemma-3-27B моделі тақырыбыңызды талдап жатыр.</div>
+        </div>`;
+
+    fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'search_projects', topic: topic })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data && data.success) {
+                let articles = [];
+                try {
+                    // Try to extract JSON array if AI included backticks or text
+                    let responseText = data.response.trim();
+                    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+                    if (jsonMatch) responseText = jsonMatch[0];
+                    articles = JSON.parse(responseText);
+                } catch (e) {
+                    console.error("JSON Parse Error:", e, data.response);
+                    resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Мәліметтерді өңдеу кезінде қате орын алды. Қайта көріңіз.</div>';
+                    return;
+                }
+
+                resultsContainer.innerHTML = '';
+                if (Array.isArray(articles)) {
+                    articles.forEach((art, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'project-card';
+                        card.style.animationDelay = `${index * 0.1}s`;
+                        card.innerHTML = `
+                            <h3 class="project-title">${art.title || 'Тақырыпсыз мақала'}</h3>
+                            <div class="project-meta">
+                                <div class="meta-item"><i class="fa-solid fa-user-graduate"></i> <span>${art.authors || 'Белгісіз автор'}</span></div>
+                                <div class="meta-item"><i class="fa-solid fa-calendar-days"></i> <span>${art.year || 'Жыл көрсетілмеген'}</span></div>
+                            </div>
+                            <a href="${art.link}" target="_blank" class="project-link">
+                                <span>Толық оқу</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        `;
+                        resultsContainer.appendChild(card);
+                    });
+                }
+            } else {
+                resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Серверден мақала алу мүмкін болмады.</div>';
+            }
+        })
+        .catch(error => {
+            console.error("Search Error:", error);
+            resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Желі қателігі орын алды.</div>';
+        });
+}
+
+
 function sendQuery() {
     const promptInput = document.getElementById('gemini-prompt');
     const prompt = promptInput.value.trim();
     if (!prompt) return;
 
     const chatContainer = document.getElementById('chat-history');
-    
+
+    // Add User Message
     const userMsg = document.createElement('div');
-    userMsg.style.cssText = "background:#e3f2fd; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-end; max-width:80%; margin-left:auto;";
-    userMsg.textContent = "Сіз: " + prompt;
+    userMsg.className = "chat-message user-message";
+    userMsg.textContent = prompt;
     chatContainer.appendChild(userMsg);
-    
+
     promptInput.value = '';
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    // Show Typing Indicator
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = "typing-indicator";
+    typingIndicator.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+    typingIndicator.id = "typing-indicator-el";
+    chatContainer.appendChild(typingIndicator);
     chatContainer.scrollTop = chatContainer.scrollHeight;
 
     fetch(API_URL, {
@@ -236,26 +349,144 @@ function sendQuery() {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'ask_gemini', prompt: prompt })
     })
-    .then(response => {
-        console.log("Gemini Raw Fetch Output:", response);
-        return response.json();
+        .then(response => response.json())
+        .then(data => {
+            const indicator = document.getElementById('typing-indicator-el');
+            if (indicator) indicator.remove();
+
+            const textResponse = (data && data.success) ? data.response : ((data && data.message) ? data.message : "Жауап жоқ.");
+            const botMsg = document.createElement('div');
+            botMsg.className = "chat-message bot-message";
+            chatContainer.appendChild(botMsg);
+
+            animateTextWordByWord(botMsg, textResponse);
+        })
+        .catch(error => {
+            console.error("Gemini Error:", error);
+            const indicator = document.getElementById('typing-indicator-el');
+            if (indicator) indicator.remove();
+            const errorMsg = document.createElement('div');
+            errorMsg.className = "chat-message bot-message";
+            errorMsg.style.color = "red";
+            errorMsg.textContent = "Желі қателігі орын алды.";
+            chatContainer.appendChild(errorMsg);
+        });
+}
+
+function animateTextWordByWord(element, text) {
+    const words = text.split(' ');
+    let currentIdx = 0;
+    element.innerHTML = ''; 
+
+    function addWord() {
+        if (currentIdx < words.length) {
+            const currentText = words.slice(0, currentIdx + 1).join(' ');
+            element.innerHTML = formatMarkdown(currentText);
+            
+            const chatContainer = document.getElementById('chat-history');
+            if (chatContainer) chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            currentIdx++;
+            setTimeout(addWord, 40); 
+        }
+    }
+    addWord();
+}
+
+function checkPlagiarism() {
+    const textArea = document.getElementById('plagiarism-text-area');
+    if (!textArea) return;
+    const text = textArea.value.trim();
+    if (!text) {
+        alert("Мәтінді енгізіңіз!");
+        return;
+    }
+
+    const btn = document.getElementById('plag-check-btn');
+    const rangeText = document.getElementById('plag-range-text');
+    const statusBadge = document.getElementById('plag-status-badge');
+    const tipsList = document.getElementById('plag-tips-list');
+    const percentDisplay = document.getElementById('plag-percent-display');
+    const scanRay = document.getElementById('scanning-ray');
+    const statusIndicator = document.querySelector('.status-indicator');
+
+    // Loading State
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ТАЛДАУ ЖАСАЛУДА...';
+    percentDisplay.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i>';
+    percentDisplay.style.fontSize = '32px';
+    rangeText.innerText = 'Есептелуде...';
+    statusBadge.innerText = 'ІЗДЕУДЕ...';
+    if (statusIndicator) statusIndicator.classList.add('active');
+    
+    // Show Scanning Ray
+    if (scanRay) {
+        scanRay.style.display = 'block';
+        scanRay.style.animation = 'scanMove 3s linear infinite';
+    }
+
+    tipsList.innerHTML = '<div class="tip-placeholder"><i class="fa-solid fa-magnifying-glass-chart fa-beat"></i> AI мәтін құрылымын талдап жатыр...</div>';
+
+    fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'check_plagiarism', text: text })
     })
+    .then(res => res.json())
     .then(data => {
-        console.log("Gemini Parsed Data:", data);
-        const textResponse = (data && data.success) ? data.response : ((data && data.message) ? data.message : "Жауап жоқ.");
-        const botMsg = document.createElement('div');
-        botMsg.style.cssText = "background:white; border:1px solid #ccc; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-start; max-width:80%;";
-        botMsg.textContent = "Ассистент: " + textResponse;
-        chatContainer.appendChild(botMsg);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> ТЕКСЕРУДІ БАСТАУ';
+        if (scanRay) scanRay.style.display = 'none';
+        
+        if (data.success) {
+            try {
+                let aiResponse = data.response.trim();
+                const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+                if (jsonMatch) aiResponse = jsonMatch[0];
+                const result = JSON.parse(aiResponse);
+
+                // Update UI
+                const pValue = result.percentage.split('-')[1] || result.percentage;
+                percentDisplay.innerText = pValue;
+                percentDisplay.style.fontSize = '54px'; 
+                rangeText.innerText = result.percentage;
+                statusBadge.innerText = result.status;
+                
+                if (statusIndicator) statusIndicator.classList.add('active');
+
+                // Update Tips
+                tipsList.innerHTML = '';
+                if (Array.isArray(result.tips)) {
+                    result.tips.forEach((tip, idx) => {
+                        const tipCard = document.createElement('div');
+                        tipCard.className = 'tip-card-premium';
+                        tipCard.style.animationDelay = (idx * 0.1) + 's';
+                        
+                        const icon = idx === 0 ? 'fa-lightbulb' : (idx === 1 ? 'fa-pen-fancy' : 'fa-check-double');
+                        
+                        tipCard.innerHTML = `
+                            <div class="tip-icon"><i class="fa-solid ${icon}"></i></div>
+                            <div class="tip-content">${tip}</div>
+                        `;
+                        tipsList.appendChild(tipCard);
+                    });
+                }
+            } catch (e) {
+                console.error("Parse error:", e, data.response);
+                tipsList.innerHTML = '<div class="tip-card-premium" style="border-color: var(--primary-red);"><div class="tip-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="tip-content">Сервер жауабын өңдеу мүмкін болмады.</div></div>';
+                percentDisplay.innerText = '%';
+            }
+        } else {
+            tipsList.innerHTML = `<div class="tip-card-premium" style="border-color: var(--primary-red);"><div class="tip-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="tip-content">${data.message}</div></div>`;
+            percentDisplay.innerText = 'ERR';
+        }
     })
-    .catch(error => {
-        console.error("Gemini Fetch Error:", error);
-        const botMsg = document.createElement('div');
-        botMsg.style.cssText = "background:white; border:1px solid #ccc; padding:10px; border-radius:10px; margin-bottom:10px; align-self:flex-start; max-width:80%; color:red;";
-        botMsg.textContent = "Ассистент: Желі қателігі орын алды.";
-        chatContainer.appendChild(botMsg);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
+    .catch(e => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> ТЕКСЕРУДІ БАСТАУ';
+        if (scanRay) scanRay.style.display = 'none';
+        tipsList.innerHTML = '<div class="tip-card-premium"><div class="tip-icon"><i class="fa-solid fa-wifi"></i></div><div class="tip-content">Желілік қате орын алды.</div></div>';
+        percentDisplay.innerText = '%';
     });
 }
 
@@ -451,14 +682,14 @@ const courseData = baseCourseData.map((section, sIdx) => {
     let pages = [];
     for (let p = 1; p <= 30; p++) {
         // p - бет нөмірі (1-ден 30-ға дейін)
-        let k1 = section.keywords[p - 1]; 
+        let k1 = section.keywords[p - 1];
         let k2 = section.keywords[p % section.keywords.length]; // Келесі сөз (немесе басына қайта оралады)
-        
+
         // Procedurally select 3 diverse paragraphs for this page to make each page unique and very informative
-        let para1 = section.paragraphs[p];
+        let para1 = section.paragraphs[p - 1];
         let para2 = p === 30 ? section.paragraphs[0] : section.paragraphs[p];
         let para3 = section.paragraphs[(p + 15) % 30];
-        
+
         let content = `
             <h3>${section.title} - ${p}-бет</h3>
             <div style="margin-top: 20px; padding: 20px; background: #fafafa; border-radius: 10px; border-left: 5px solid var(--primary-red);">
@@ -492,13 +723,13 @@ let currentPageIndex = -1;
 function openCourse(index) {
     currentSectionIndex = index;
     currentPageIndex = -1;
-    
+
     document.getElementById('course-title').innerText = courseData[index].title;
     renderPageList();
-    
+
     document.getElementById('course-page-list').style.display = 'block';
     document.getElementById('course-page-content').style.display = 'none';
-    
+
     showView('view-course');
 }
 
@@ -516,14 +747,14 @@ function handleCourseBack() {
 function renderPageList() {
     const grid = document.getElementById('page-grid-items');
     grid.innerHTML = '';
-    
+
     const sectionProgress = userMethodologyProgress[currentSectionIndex] || Array(30).fill(false);
-    
+
     courseData[currentSectionIndex].pages.forEach((page, pIdx) => {
         const item = document.createElement('div');
         item.className = 'page-item' + (sectionProgress[pIdx] ? ' completed' : '');
         item.onclick = () => openPage(pIdx);
-        
+
         item.innerHTML = `
             <div class="check"><i class="fa-solid fa-circle-check"></i></div>
             <div class="page-number">${pIdx + 1}</div>
@@ -536,12 +767,12 @@ function renderPageList() {
 function openPage(pIdx) {
     currentPageIndex = pIdx;
     const page = courseData[currentSectionIndex].pages[pIdx];
-    
+
     document.getElementById('course-text').innerHTML = page.content;
-    
+
     const nextBtn = document.getElementById('course-next-btn');
     const finishBtn = document.getElementById('course-finish-btn');
-    
+
     if (pIdx < 29) {
         nextBtn.style.display = 'block';
         finishBtn.style.display = 'none';
@@ -550,7 +781,7 @@ function openPage(pIdx) {
         nextBtn.style.display = 'none';
         finishBtn.style.display = 'block';
     }
-    
+
     document.getElementById('course-page-list').style.display = 'none';
     document.getElementById('course-page-content').style.display = 'flex';
 }
@@ -558,7 +789,7 @@ function openPage(pIdx) {
 function nextPage() {
     // Current page is finished
     markPageComplete(currentPageIndex);
-    
+
     if (currentPageIndex < 29) {
         openPage(currentPageIndex + 1);
     }
@@ -575,7 +806,7 @@ function markPageComplete(pIdx) {
     if (!userMethodologyProgress[currentSectionIndex]) {
         userMethodologyProgress[currentSectionIndex] = Array(30).fill(false);
     }
-    
+
     if (!userMethodologyProgress[currentSectionIndex][pIdx]) {
         userMethodologyProgress[currentSectionIndex][pIdx] = true;
         updateProgressUI();
@@ -587,13 +818,13 @@ function updateProgressUI() {
     for (let sIdx = 0; sIdx < 5; sIdx++) {
         const bar = document.getElementById('progress-' + sIdx);
         const item = document.getElementById('step-item-' + sIdx);
-        
+
         const progArray = userMethodologyProgress[sIdx] || Array(30).fill(false);
         const completedCount = progArray.filter(v => v === true).length;
         const percentage = Math.round((completedCount / 30) * 100);
-        
+
         if (bar) bar.style.width = percentage + '%';
-        
+
         if (item) {
             const icon = item.querySelector('.step-icon');
             if (percentage === 100) {
@@ -622,14 +853,14 @@ function updateProgressUI() {
 function saveProgressToServer() {
     const user = document.getElementById('display-name').innerText;
     if (user === "Пайдаланушы" || !user) return;
-    
+
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'save_progress', username: user, progress: userMethodologyProgress })
     }).then(res => res.json())
-      .then(data => console.log("Progress save:", data))
-      .catch(e => console.error("Progress save error:", e));
+        .then(data => console.log("Progress save:", data))
+        .catch(e => console.error("Progress save error:", e));
 }
 
 // --- PUBLICATION UPLOAD LOGIC ---
@@ -675,11 +906,11 @@ function handleFileUpload(file) {
     status.style.color = '#ff9800';
 
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         const base64Data = e.target.result.split(',')[1];
-        
+
         status.innerText = "Файл бұлтқа жүктелуде. Күте тұрыңыз...";
-        
+
         fetch(API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -691,22 +922,22 @@ function handleFileUpload(file) {
                 base64: base64Data
             })
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data && data.success) {
-                status.innerText = "Сәтті жүктелді!";
-                status.style.color = '#4caf50';
-                fetchUserPublications(true); // Force refresh to update cache with new file
-            } else {
-                status.innerText = "Қате: " + (data.message || "Жүктеу мүмкін болмады.");
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    status.innerText = "Сәтті жүктелді!";
+                    status.style.color = '#4caf50';
+                    fetchUserPublications(true); // Force refresh to update cache with new file
+                } else {
+                    status.innerText = "Қате: " + (data.message || "Жүктеу мүмкін болмады.");
+                    status.style.color = 'var(--primary-red)';
+                }
+            })
+            .catch(err => {
+                console.error("Upload Error:", err);
+                status.innerText = "Байланыс қатесі.";
                 status.style.color = 'var(--primary-red)';
-            }
-        })
-        .catch(err => {
-            console.error("Upload Error:", err);
-            status.innerText = "Байланыс қатесі.";
-            status.style.color = 'var(--primary-red)';
-        });
+            });
     };
     reader.readAsDataURL(file);
 }
@@ -714,9 +945,9 @@ function handleFileUpload(file) {
 function fetchUserPublications(force = false) {
     const user = document.getElementById('display-name').innerText;
     if (user === "Пайдаланушы" || !user) return;
-    
+
     const listDiv = document.getElementById('files-list');
-    
+
     // If we have cache and NOT forcing, just render and return
     if (publicationsCache && !force) {
         renderFilesList(publicationsCache);
@@ -724,29 +955,29 @@ function fetchUserPublications(force = false) {
         return;
     }
 
-    if(listDiv) listDiv.innerHTML = '<div style="text-align: center; color: #777; padding: 20px;">Жүктелуде... <i class="fa-solid fa-spinner fa-spin"></i></div>';
-    
+    if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: #777; padding: 20px;">Жүктелуде... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'get_files', username: user })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data && data.success && data.files) {
-            publicationsCache = data.files;
-            renderFilesList(data.files);
-            updatePublicationsBadge(data.files.length);
-        } else {
-            publicationsCache = [];
-            if(listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">Файлдар жүктелген жоқ.</div>';
-            updatePublicationsBadge(0);
-        }
-    })
-    .catch(err => {
-        console.error("Fetch Files Error:", err);
-        if(listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--primary-red); padding: 20px;">Деректерді алу мүмкін болмады.</div>';
-    });
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.success && data.files) {
+                publicationsCache = data.files;
+                renderFilesList(data.files);
+                updatePublicationsBadge(data.files.length);
+            } else {
+                publicationsCache = [];
+                if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">Файлдар жүктелген жоқ.</div>';
+                updatePublicationsBadge(0);
+            }
+        })
+        .catch(err => {
+            console.error("Fetch Files Error:", err);
+            if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--primary-red); padding: 20px;">Деректерді алу мүмкін болмады.</div>';
+        });
 }
 
 function updatePublicationsBadge(count) {
@@ -760,24 +991,24 @@ function manualRefreshPublications() {
 
 function renderFilesList(files) {
     const listDiv = document.getElementById('files-list');
-    if(!listDiv) return;
+    if (!listDiv) return;
     listDiv.innerHTML = '';
-    
+
     // Sort files newest first if possible (assuming timestamp is chronologically valid string or number)
     try {
         files.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-    } catch(e) {}
+    } catch (e) { }
 
     files.forEach(f => {
         const dateStr = new Date(f.timestamp).toLocaleDateString('kk-KZ', {
             year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
-        
+
         let icon = 'fa-file-lines';
         const nameLower = f.originalName.toLowerCase();
-        if(nameLower.endsWith('.pdf')) icon = 'fa-file-pdf';
-        else if(nameLower.endsWith('.docx') || nameLower.endsWith('.doc')) icon = 'fa-file-word';
-        else if(nameLower.endsWith('.png') || nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg')) icon = 'fa-file-image';
+        if (nameLower.endsWith('.pdf')) icon = 'fa-file-pdf';
+        else if (nameLower.endsWith('.docx') || nameLower.endsWith('.doc')) icon = 'fa-file-word';
+        else if (nameLower.endsWith('.png') || nameLower.endsWith('.jpg') || nameLower.endsWith('.jpeg')) icon = 'fa-file-image';
 
         const card = document.createElement('div');
         card.className = 'file-card';
@@ -810,15 +1041,26 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ action: 'login', username: savedUser, password: savedPass })
         })
-        .then(res => res.json())
-        .then(data => {
-            if(data && data.success) {
-                onAuthResponse(data);
-            } else {
-                localStorage.removeItem('savedUsername');
-                localStorage.removeItem('savedPassword');
-            }
-        })
-        .catch(e => console.error("Auto-login error:", e));
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.success) {
+                    onAuthResponse(data);
+                } else {
+                    localStorage.removeItem('savedUsername');
+                    localStorage.removeItem('savedPassword');
+                }
+            })
+            .catch(e => console.error("Auto-login error:", e));
+    }
+
+    // Load chat font preference
+    const savedChatFont = localStorage.getItem('chatFontSizeIndex');
+    if (savedChatFont !== null) {
+        chatFontSizeIndex = parseInt(savedChatFont);
+        const chatContainer = document.getElementById('chat-history');
+        if (chatContainer) {
+            fontClasses.forEach(c => chatContainer.classList.remove(c));
+            chatContainer.classList.add(fontClasses[chatFontSizeIndex]);
+        }
     }
 });

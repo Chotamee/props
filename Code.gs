@@ -1,5 +1,5 @@
 const SHEET_ID = '1z9Xi8qHqDZ7QOHiI0D6SefqBkVmN6vmf-B-_xyZWtIY'; 
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY'; // Replace with yours
+const GEMINI_API_KEY = 'AIzaSyCusPWp8T_-TTckNmzpHikEBGfcSO92aJA'; 
 const DRIVE_FOLDER_ID = '1wGMT5TVIYRVFm_fr7SDLiXSgrX4YHi0J'; // Your folder ID
 
 function doGet(e) {
@@ -31,6 +31,12 @@ function doPost(e) {
         break;
       case 'get_files':
         result = getUserFiles(data.username);
+        break;
+      case 'search_projects':
+        result = searchEnglishArticles(data.topic);
+        break;
+      case 'check_plagiarism':
+        result = checkPlagiarism(data.text);
         break;
       default:
         result = { success: false, message: "Белгісіз әрекет." };
@@ -118,16 +124,94 @@ function registerUser(username, password) {
   return { success: true, message: "Тіркелу сәтті өтті.", username: username, id: uniqueId };
 }
 
+
 function askGemini(prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`;
-  const payload = { contents: [{ parts: [{ text: prompt }] }] };
-  const options = { method: 'post', contentType: 'application/json', payload: JSON.stringify(payload) };
+  const model = "gemma-3-27b-it";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const systemInstruction = "Сен Ғылыми Зертхана (The Science Lab) платформасының интеллектуалды ассистентісің. Сенің мақсатың - қолданушыларға ғылыми мақалалар жазу, зерттеу әдістемесі, деректерді талдау және академиялық жазу бойынша көмек беру. Барлық жауаптарыңды мүмкіндігінше тек қазақ тілінде, сыпайы және кәсіби (академиялық) стильде бер. Егер саған ғылымға қатысты емес немесе әдепсіз сұрақ қойылса, қолданушыға сенің негізгі бағытың ғылыми зерттеулер екенін сыпайы ескертіп, сұрақты сол бағытқа бұруға тырыс. Жауаптарыңда маңызды бөліктерді қалың (bold) немесе тізім түрінде көрсет.";
+
+  const payload = {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: systemInstruction + "\n\nҚолданушы сұрағы: " + prompt }]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 2048,
+    }
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
   try {
     const response = UrlFetchApp.fetch(url, options);
     const json = JSON.parse(response.getContentText());
-    return json.candidates[0].content.parts[0].text;
+    
+    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
+      return json.candidates[0].content.parts[0].text;
+    } else {
+      return "Bot Error: " + (json.error ? json.error.message : "Түсініксіз қателік орын алды.");
+    }
   } catch (e) {
-    return "Gemini API Error: " + e.toString();
+    return "Network Error: " + e.toString();
+  }
+}
+
+function searchEnglishArticles(topic) {
+  const model = "gemma-3-27b-it";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const systemInstruction = `Сен академиялық іздеу жүйесісің. Пайдаланушы берген тақырыпқа сәйкес келетін 5 нақты ағылшын тіліндегі ғылыми мақаланы тап. 
+Жауапты ТЕК қана мынадай форматтағы JSON массив түрінде қайтар, ешқандай артық мәтінсіз немесе блоктаушы таңбаларсыз (backticks):
+[
+  {
+    "title": "Article Title",
+    "authors": "Author name(s)",
+    "year": "Publication Year",
+    "link": "URL to article"
+  }
+]
+Егер мақалалар табылса, тек осы JSON-ды қайтар.`;
+
+  const payload = {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: systemInstruction + "\n\nТақырып: " + topic }]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 2048,
+    }
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    const json = JSON.parse(response.getContentText());
+    
+    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
+      return json.candidates[0].content.parts[0].text;
+    } else {
+      return "Error: " + (json.error ? json.error.message : "Түсініксіз қателік орын алды.");
+    }
+  } catch (e) {
+    return "Error: " + e.toString();
   }
 }
 
@@ -200,5 +284,62 @@ function getUserFiles(username) {
     return { success: true, files: userFiles };
   } catch (e) {
     return { success: false, message: "Fetch Error: " + e.toString() };
+  }
+}
+
+function checkPlagiarism(text) {
+  const model = "gemma-3-27b-it";
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const systemInstruction = `Сен академиялық антиплагиат маманысың. Берілген мәтінді бірегейлікке (оригинальность) талда. 
+Жауапты ТЕК қана мынадай форматтағы JSON түрінде қайтар, ешқандай артық мәтінсіз немесе блоктаушы таңбаларсыз (backticks):
+{
+  "percentage": "80-90%",
+  "status": "ЖАҚСЫ",
+  "tips": [
+    "Мәтінді жақсарту бойынша 1-ші академиялық кеңес (қазақша)",
+    "Мәтінді жақсарту бойынша 2-ші академиялық кеңес (қазақша)",
+    "Мәтінді жақсарту бойынша 3-ші академиялық кеңес (қазақша)"
+  ]
+}
+Ережелер:
+1. "percentage" - 10 пайыздық диапазон болсын.
+2. "status" - 80%+ "ЖАҚСЫ", 50-80% "ОРТАША", <50% "ТӨМЕН".
+3. "tips" - 3 нақты кеңес.
+4. Жауап тек қана JSON болуы тиіс.`;
+
+  const payload = {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: systemInstruction + "\n\nМәтінді талда:\n\n" + text }]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.1, 
+      maxOutputTokens: 2048,
+    }
+  };
+
+  try {
+    const options = {
+      method: 'post',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+    const response = UrlFetchApp.fetch(url, options);
+    const json = JSON.parse(response.getContentText());
+    
+    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
+      return { success: true, response: json.candidates[0].content.parts[0].text };
+    } else {
+      let errMsg = "AI жауап бере алмады.";
+      if (json.error) errMsg += " API Error: " + json.error.message;
+      else if (json.promptFeedback) errMsg += " Blocked by safety filters.";
+      return { success: false, message: errMsg };
+    }
+  } catch (e) {
+    return { success: false, message: "Network Error: " + e.toString() };
   }
 }
