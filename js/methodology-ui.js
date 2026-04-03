@@ -1,4 +1,3 @@
-let userMethodologyProgress = {}; // Format: { "0": [true, false...], "1": [...] }
 let currentSectionIndex = -1;
 let currentPageIndex = -1;
 
