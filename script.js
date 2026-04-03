@@ -455,9 +455,9 @@ const courseData = baseCourseData.map((section, sIdx) => {
         let k2 = section.keywords[p % section.keywords.length]; // Келесі сөз (немесе басына қайта оралады)
         
         // Procedurally select 3 diverse paragraphs for this page to make each page unique and very informative
-        let para1 = section.paragraphs[index];
+        let para1 = section.paragraphs[p];
         let para2 = p === 30 ? section.paragraphs[0] : section.paragraphs[p];
-        let para3 = section.paragraphs[(index + 15) % 30];
+        let para3 = section.paragraphs[(p + 15) % 30];
         
         let content = `
             <h3>${section.title} - ${p}-бет</h3>
