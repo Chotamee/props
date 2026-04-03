@@ -70,11 +70,7 @@ function testDriveAccess() {
  * Бұл функция жаңа API кілтін Script Properties-ке қауіпсіз түрде сақтайды.
  * Сақтап болған соң, бұл функцияны өшіріп тастауға немесе осылай қалдыруға болады.
  */
-function setGeminiKey() {
-  const newKey = 'AIzaSyCOAbnlBjUiNy_xCgCCRU7iTqRM0XGxPeo';
-  PropertiesService.getScriptProperties().setProperty('GEMINI_API_KEY', newKey);
-  Logger.log('Gemini APIKey successfully set to Script Properties!');
-}
+
 
 function saveToSheet(data, sheetName) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
