@@ -545,8 +545,18 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <!-- Defer heavy external libs for non-blocking rendering -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Modular JS loading without render block (lazy loading for Course Data managed internally) -->
+    <script defer src="js/config.js"></script>
+    <script defer src="js/ui.js"></script>
+    <script defer src="js/auth.js"></script>
+    <script defer src="js/math.js"></script>
+    <script defer src="js/ai-hub.js"></script>
+    <script defer src="js/plagiarism.js"></script>
+    <script defer src="js/publications.js"></script>
+    <script defer src="js/main.js"></script>
 </body>
 
 </html>

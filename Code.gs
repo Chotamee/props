@@ -1,5 +1,5 @@
 const SHEET_ID = '1z9Xi8qHqDZ7QOHiI0D6SefqBkVmN6vmf-B-_xyZWtIY'; 
-const GEMINI_API_KEY = 'AIzaSyCusPWp8T_-TTckNmzpHikEBGfcSO92aJA'; 
+const GEMINI_API_KEY = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY'); 
 const DRIVE_FOLDER_ID = '1wGMT5TVIYRVFm_fr7SDLiXSgrX4YHi0J'; // Your folder ID
 
 function doGet(e) {
@@ -63,6 +63,18 @@ function testDriveAccess() {
 }
 
 // --- CORE FUNCTIONS ---
+
+/**
+ * 
+ * Бір рет іске қосыңыз (Run once from Editor).
+ * Бұл функция жаңа API кілтін Script Properties-ке қауіпсіз түрде сақтайды.
+ * Сақтап болған соң, бұл функцияны өшіріп тастауға немесе осылай қалдыруға болады.
+ */
+function setGeminiKey() {
+  const newKey = 'AIzaSyCOAbnlBjUiNy_xCgCCRU7iTqRM0XGxPeo';
+  PropertiesService.getScriptProperties().setProperty('GEMINI_API_KEY', newKey);
+  Logger.log('Gemini APIKey successfully set to Script Properties!');
+}
 
 function saveToSheet(data, sheetName) {
   const ss = SpreadsheetApp.openById(SHEET_ID);
