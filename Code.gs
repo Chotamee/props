@@ -33,7 +33,7 @@ function doPost(e) {
         result = getUserFiles(data.username);
         break;
       case 'search_projects':
-        result = searchEnglishArticles(data.topic);
+        result = { success: true, response: searchEnglishArticles(data.topic) };
         break;
       case 'check_plagiarism':
         result = checkPlagiarism(data.text);

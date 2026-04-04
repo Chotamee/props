@@ -54,15 +54,26 @@ function searchProjects() {
     })
         .then(response => response.json())
         .then(data => {
-            if (data && data.success) {
+            // Handle both structured {success: true, response: ...} and raw string responses
+            const success = (typeof data === 'object' && data !== null) ? data.success : true;
+            let rawResponse = (typeof data === 'object' && data !== null) ? data.response : data;
+
+            if (success && rawResponse) {
                 let articles = [];
                 try {
-                    let responseText = data.response.trim();
-                    const jsonMatch = responseText.match(/\[[\s\S]*\]/);
-                    if (jsonMatch) responseText = jsonMatch[0];
+                    let responseText = rawResponse.trim();
+                    // Extract JSON array using a more robust approach
+                    const startIdx = responseText.indexOf('[');
+                    const endIdx = responseText.lastIndexOf(']');
+                    
+                    if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
+                        responseText = responseText.substring(startIdx, endIdx + 1);
+                    }
+                    
                     articles = JSON.parse(responseText);
                 } catch (e) {
-                    resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Мәліметтерді өңдеу кезінде қате орын алды. Қайта көріңіз.</div>';
+                    console.error("JSON Parse Error:", e, "Raw Data:", rawResponse);
+                    resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Мәліметтерді өңдеу кезінде қате орын алды (JSON Format).</div>';
                     return;
                 }
 

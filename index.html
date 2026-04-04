@@ -36,9 +36,10 @@
                 ҒЫЛЫМИ ЗЕРТТЕУ ТЕХНОЛОГИЯСЫ
             </div>
             <div class="header-icons">
-                <i class="fa-solid fa-plane"></i> HERE
-                <i class="fa-regular fa-bell"></i>
-                <div class="profile-small"><i class="fa-solid fa-user"></i></div>
+                <div class="header-user-info" onclick="showView('view-settings')">
+                    <span class="header-username" id="header-display-name">Пайдаланушы</span>
+                    <div class="profile-small"><i class="fa-solid fa-user"></i></div>
+                </div>
             </div>
         </header>
 
@@ -70,18 +71,12 @@
                             <span><i class="fa-regular fa-file-lines"></i> Жарияланымдар</span>
                             <span class="badge" id="publications-badge">0</span>
                         </li>
-                        <li class="nav-item">
-                            <span><i class="fa-regular fa-file"></i> Беттер</span>
-                            <span class="badge">0</span>
-                        </li>
                     </ul>
                 </div>
 
                 <div class="nav-section">
                     <ul class="nav-list">
-                        <li class="nav-item"><span><i class="fa-solid fa-gear"></i> БАПТАУЛАР</span></li>
-                        <li class="nav-item"><span><i class="fa-regular fa-envelope"></i> ХАБАРЛАМАЛАР</span></li>
-                        <li class="nav-item"><span><i class="fa-solid fa-trophy"></i> ЖЕТІСТІКТЕР</span></li>
+                        <li class="nav-item" onclick="showView('view-settings')"><span><i class="fa-solid fa-gear"></i> БАПТАУЛАР</span></li>
                     </ul>
                 </div>
             </aside>
@@ -137,9 +132,9 @@
                         <!-- Card 5 -->
                         <div class="module-card">
                             <div class="module-card-content">
-                                <div class="icon-circle"><i class="fa-solid fa-calculator"></i></div>
-                                <div class="module-title">Деректер және Математика</div>
-                                <div class="module-desc">Математикалық құралдармен деректерді өңдеңіз.</div>
+                                <div class="icon-circle"><i class="fa-solid fa-chart-column"></i></div>
+                                <div class="module-title">Инфографика құру</div>
+                                <div class="module-desc">Кәсіби кестелер мен диаграммалар жасаңыз.</div>
                             </div>
                             <button class="btn" onclick="showView('view-math')">КІРУ</button>
                         </div>
@@ -363,119 +358,55 @@
                     </div>
                 </div>
 
-                <!-- Detail View: Data & Math Tools -->
+                <!-- Detail View: Infographic Creator -->
                 <div id="view-math" class="detail-view">
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Деректер және Математика</h2>
+                        <h2>Инфографика конструкторы</h2>
                     </div>
                     <div class="detail-content">
-                        <div class="math-layout">
+                        <div class="infographic-editor">
+                            <div class="editor-controls">
+                                <div class="control-group">
+                                    <label>Деректердің атауы (Labels)</label>
+                                    <input type="text" id="infographic-labels" class="form-control" placeholder="Алма, Алмұрт, Шие" value="A, B, C, D" oninput="renderInfographic()">
+                                </div>
+                                <div class="control-group">
+                                    <label>Мәндері (Values)</label>
+                                    <input type="text" id="infographic-values" class="form-control" placeholder="10, 20, 30" value="45, 25, 60, 30" oninput="renderInfographic()">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label>Диаграмма түрі</label>
+                                    <div class="chart-type-grid">
+                                        <button class="type-btn active" id="btn-type-bar" onclick="setChartType('bar')"><i class="fa-solid fa-chart-bar"></i> Баған</button>
+                                        <button class="type-btn" id="btn-type-line" onclick="setChartType('line')"><i class="fa-solid fa-chart-line"></i> Сызық</button>
+                                        <button class="type-btn" id="btn-type-pie" onclick="setChartType('pie')"><i class="fa-solid fa-chart-pie"></i> Дөңгелек</button>
+                                        <button class="type-btn" id="btn-type-radar" onclick="setChartType('radar')"><i class="fa-solid fa-circle-nodes"></i> Радар</button>
+                                    </div>
+                                </div>
 
-                            <!-- Top Left: Graphing -->
-                            <div class="math-card" style="grid-column: 1 / 3;">
-                                <div class="math-title">ИНТЕРАКТИВТІ ГРАФИК</div>
-                                <div style="display: flex; gap: 30px; flex-wrap: wrap;">
-                                    <div style="flex: 1; min-width: 200px;">
-                                        <div class="input-group-math">
-                                            <label>КІРІСТІРУ ДЕРЕКТЕРІ</label>
-                                            <input type="text" class="form-control" id="chart-data"
-                                                value="0, 2, 3, 5, 0">
-                                        </div>
-                                        <div class="input-group-math">
-                                            <label>Деректер</label>
-                                            <select class="form-control">
-                                                <option>Қорытынды</option>
-                                            </select>
-                                        </div>
-                                        <button class="btn" style="border-radius: 5px;"
-                                            onclick="renderChart()">ГЕНЕРАЦИЯ</button>
+                                <div class="control-group">
+                                    <label>Түстер палитрасы</label>
+                                    <div class="palette-grid">
+                                        <button class="palette-btn active" id="btn-pal-professional" style="background: #d32f2f;" onclick="setPalette('professional')"></button>
+                                        <button class="palette-btn" id="btn-pal-corporate" style="background: #1976d2;" onclick="setPalette('corporate')"></button>
+                                        <button class="palette-btn" id="btn-pal-eco" style="background: #388e3c;" onclick="setPalette('eco')"></button>
+                                        <button class="palette-btn" id="btn-pal-modern" style="background: #455a64;" onclick="setPalette('modern')"></button>
                                     </div>
-                                    <div style="flex: 2; min-width: 250px;">
-                                        <canvas id="mainChart" style="max-height: 250px; width: 100%;"></canvas>
-                                    </div>
+                                </div>
+
+                                <div class="download-action">
+                                    <button class="btn" style="width: 100%;" onclick="downloadInfographic()">
+                                        <i class="fa-solid fa-download"></i> PNG жүктеп алу
+                                    </button>
                                 </div>
                             </div>
 
-                            <!-- Bottom Left: Calculator -->
-                            <div class="math-card">
-                                <div class="math-title">ҒЫЛЫМИ КАЛЬКУЛЯТОР</div>
-                                <div class="search-bar">
-                                    <input type="text" placeholder="Функцияларды іздеу...">
-                                    <button><i class="fa-solid fa-search"></i></button>
-                                </div>
-
-                                <div class="math-title" style="margin-top: 20px;">ФУНКЦИЯЛАР</div>
-                                <div class="function-grid">
-                                    <div class="func-btn active">Mean</div>
-                                    <div class="func-btn">Median</div>
-                                    <div class="func-btn">T-test</div>
-                                </div>
-
-                                <div style="margin-top: 25px;">
-                                    <div class="toggle-row">
-                                        <div style="display: flex; gap: 15px; font-size: 13px;">
-                                            <span>Mean</span><span>Median</span><span>T-test</span>
-                                        </div>
-                                        <label class="toggle-switch">
-                                            <input type="checkbox" checked>
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                    <div class="toggle-row">
-                                        <div style="display: flex; gap: 15px; font-size: 13px;">
-                                            <span>Media</span><span>L-test</span><span>CT-test</span>
-                                        </div>
-                                        <label class="toggle-switch">
-                                            <input type="checkbox">
-                                            <span class="slider"></span>
-                                        </label>
-                                    </div>
-                                </div>
+                            <div class="chart-preview">
+                                <canvas id="infographicCanvas" style="max-height: 400px; width: 100%;"></canvas>
                             </div>
-
-                            <!-- Bottom Right: Dataset Input -->
-                            <div class="math-card" style="overflow-x: auto;">
-                                <div
-                                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                                    <div class="math-title" style="margin-bottom: 0;">ДЕРЕКТЕР ЖИЫНТЫҒЫ</div>
-                                    <button class="btn"
-                                        style="width: auto; padding: 5px 12px; font-size: 11px; border-radius: 5px;">+
-                                        ROLE</button>
-                                </div>
-                                <table class="data-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Data 1</th>
-                                            <th>Data 2</th>
-                                            <th>Data 3</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>1</td>
-                                            <td>90</td>
-                                            <td>183</td>
-                                            <td>120</td>
-                                        </tr>
-                                        <tr>
-                                            <td>2</td>
-                                            <td>96</td>
-                                            <td>199</td>
-                                            <td>120</td>
-                                        </tr>
-                                        <tr>
-                                            <td>3</td>
-                                            <td>96</td>
-                                            <td>183</td>
-                                            <td>120</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -540,6 +471,51 @@
                         </div>
                     </div>
                 </div>
+                <!-- Settings View -->
+                <div id="view-settings" class="detail-view">
+                    <div class="detail-header">
+                        <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2>Баптаулар</h2>
+                    </div>
+                    <div class="detail-content">
+                        <div class="settings-list">
+                            <div class="settings-card">
+                                <div class="settings-info">
+                                    <h4>Түнгі режим</h4>
+                                    <p>Интерфейс түсін күңгіртке ауыстыру</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="dark-mode-switch" onchange="toggleDarkMode()">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="settings-card">
+                                <div class="settings-info">
+                                    <h4>Чат шрифті</h4>
+                                    <p>Сұрақ орталығындағы мәтін өлшемі</p>
+                                </div>
+                                <select class="form-control" style="width: 120px;" id="setting-chat-font" onchange="updateChatFontSizeFromSetting(this.value)">
+                                    <option value="0">Кіші</option>
+                                    <option value="1" selected>Орташа</option>
+                                    <option value="2">Үлкен</option>
+                                    <option value="3">Өте үлкен</option>
+                                </select>
+                            </div>
+
+                            <div class="settings-card">
+                                <div class="settings-info">
+                                    <h4>Тіл (Language)</h4>
+                                    <p>Интерфейс тілін таңдаңыз</p>
+                                </div>
+                                <select class="form-control" style="width: 120px;">
+                                    <option value="kk" selected>Қазақ тілі</option>
+                                    <option value="en">English (Coming Soon)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </main>
         </div>
@@ -556,6 +532,7 @@
     <script defer src="js/ai-hub.js"></script>
     <script defer src="js/plagiarism.js"></script>
     <script defer src="js/publications.js"></script>
+    <script defer src="js/settings.js"></script>
     <script defer src="js/main.js"></script>
 </body>
 

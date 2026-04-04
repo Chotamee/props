@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    if (typeof initSettings === 'function') initSettings();
 });
 
 let courseDataLoaded = false;

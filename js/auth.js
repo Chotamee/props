@@ -55,6 +55,8 @@ function onAuthResponse(res) {
 
         document.getElementById('view-login').style.display = 'none';
         document.getElementById('display-name').innerText = res.username || "Пайдаланушы";
+        const headerName = document.getElementById('header-display-name');
+        if (headerName) headerName.innerText = res.username || "Пайдаланушы";
         if (res.id) document.getElementById('display-id').innerText = `ID: ${res.id}`;
 
         if (res.progress && typeof res.progress === 'object' && !Array.isArray(res.progress)) {
@@ -80,6 +82,8 @@ function logout() {
     localStorage.removeItem('savedPassword');
 
     document.getElementById('display-name').innerText = "Пайдаланушы";
+    const headerName = document.getElementById('header-display-name');
+    if (headerName) headerName.innerText = "Пайдаланушы";
     document.getElementById('display-id').innerText = "ID: Белгісіз";
     document.getElementById('login-trigger-btn').style.display = 'block';
     document.getElementById('logout-btn').style.display = 'none';
