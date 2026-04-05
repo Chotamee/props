@@ -108,7 +108,14 @@ const translations = {
         id_prefix: "ID: ",
         info_ph_labels: "Алма, Алмұрт, Шие",
         info_ph_values: "10, 20, 30",
-        search_ph_topic: "Медицинадағы жасанды интеллект..."
+        search_ph_topic: "Медицинадағы жасанды интеллект...",
+        title_calculator: "Ғылыми калькулятор",
+        desc_calculator: "Зерттеу деректерін есептеуге және талдауға арналған құрал.",
+        calc_tab_stats: "Статистика",
+        calc_tab_conv: "Түрлендіру",
+        calc_stats_input: "Деректер (үтір немесе бос орын арқылы):",
+        calc_btn_run: "Есептеу",
+        calc_conv_type: "Түрі:"
     },
     ru: {
         app_title: "ТЕХНОЛОГИЯ НАУЧНЫХ ИССЛЕДОВАНИЙ",
@@ -219,7 +226,14 @@ const translations = {
         id_prefix: "ID: ",
         info_ph_labels: "Яблоки, Груши, Вишни",
         info_ph_values: "10, 20, 30",
-        search_ph_topic: "Искусственный интеллект в медицине..."
+        search_ph_topic: "Искусственный интеллект в медицине...",
+        title_calculator: "Научный калькулятор",
+        desc_calculator: "Инструмент для вычислений и анализа исследовательских данных.",
+        calc_tab_stats: "Статистика",
+        calc_tab_conv: "Преобразование",
+        calc_stats_input: "Данные (через запятую или пробел):",
+        calc_btn_run: "Рассчитать",
+        calc_conv_type: "Тип:"
     },
     en: {
         app_title: "SCIENTIFIC RESEARCH TECHNOLOGY",
@@ -330,7 +344,14 @@ const translations = {
         id_prefix: "ID: ",
         info_ph_labels: "Apples, Pears, Cherries",
         info_ph_values: "10, 20, 30",
-        search_ph_topic: "Artificial Intelligence in Medicine..."
+        search_ph_topic: "Artificial Intelligence in Medicine...",
+        title_calculator: "Scientific Calculator",
+        desc_calculator: "A tool for computing and analyzing research data.",
+        calc_tab_stats: "Statistics",
+        calc_tab_conv: "Conversions",
+        calc_stats_input: "Data (comma or space separated):",
+        calc_btn_run: "Calculate",
+        calc_conv_type: "Type:"
     }
 };
 

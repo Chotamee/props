@@ -1,7 +1,7 @@
 // --- VIEW NAVIGATION LOGIC ---
 const allViews = [
     'view-dashboard', 'view-query', 'view-methodology',
-    'view-course', 'view-plagiarism', 'view-math', 'view-coming-soon', 'view-publications', 'view-search', 'view-settings'
+    'view-course', 'view-plagiarism', 'view-math', 'view-coming-soon', 'view-publications', 'view-search', 'view-settings', 'view-calculator'
 ];
 
 function showView(viewId) {

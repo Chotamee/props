@@ -145,11 +145,11 @@
                         <!-- Card 6 -->
                         <div class="module-card">
                             <div class="module-card-content">
-                                <div class="icon-circle"><i class="fa-solid fa-flask"></i></div>
-                                <div class="module-title" data-i18n="title_experiments">Эксперимент журналдары</div>
-                                <div class="module-desc" data-i18n="desc_experiments">Деректерді жүктеп, эксперименттерді бақылаңыз.</div>
+                                <div class="icon-circle"><i class="fa-solid fa-calculator"></i></div>
+                                <div class="module-title" data-i18n="title_calculator">Ғылыми калькулятор</div>
+                                <div class="module-desc" data-i18n="desc_calculator">Зерттеу деректерін өңдеуге арналған калькулятор.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-coming-soon')" data-i18n="btn_enter">КІРУ</button>
+                            <button class="btn" onclick="showView('view-calculator')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                     </div>
@@ -411,6 +411,95 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Detail View: Scientific Calculator -->
+                <div id="view-calculator" class="detail-view">
+                    <div class="detail-header">
+                        <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2 data-i18n="title_calculator">Ғылыми калькулятор</h2>
+                    </div>
+                    <div class="detail-content">
+                        <div class="calculator-container">
+                            <div class="calculator-main">
+                                <div class="calc-display">
+                                    <div class="calc-formula" id="calc-formula"></div>
+                                    <div class="calc-result" id="calc-result">0</div>
+                                </div>
+                                <div class="calc-btns">
+                                    <button class="calc-btn op" onclick="clearCalc()">C</button>
+                                    <button class="calc-btn op" onclick="backspaceCalc()">⌫</button>
+                                    <button class="calc-btn op" onclick="inputCalc('(')">(</button>
+                                    <button class="calc-btn op" onclick="inputCalc(')')">)</button>
+
+                                    <button class="calc-btn func" onclick="inputFunc('sin(')">sin</button>
+                                    <button class="calc-btn func" onclick="inputFunc('cos(')">cos</button>
+                                    <button class="calc-btn func" onclick="inputFunc('tan(')">tan</button>
+                                    <button class="calc-btn op" onclick="inputCalc('/')">/</button>
+
+                                    <button class="calc-btn" onclick="inputCalc('7')">7</button>
+                                    <button class="calc-btn" onclick="inputCalc('8')">8</button>
+                                    <button class="calc-btn" onclick="inputCalc('9')">9</button>
+                                    <button class="calc-btn op" onclick="inputCalc('*')">×</button>
+
+                                    <button class="calc-btn" onclick="inputCalc('4')">4</button>
+                                    <button class="calc-btn" onclick="inputCalc('5')">5</button>
+                                    <button class="calc-btn" onclick="inputCalc('6')">6</button>
+                                    <button class="calc-btn op" onclick="inputCalc('-')">-</button>
+
+                                    <button class="calc-btn" onclick="inputCalc('1')">1</button>
+                                    <button class="calc-btn" onclick="inputCalc('2')">2</button>
+                                    <button class="calc-btn" onclick="inputCalc('3')">3</button>
+                                    <button class="calc-btn op" onclick="inputCalc('+')">+</button>
+
+                                    <button class="calc-btn func" onclick="inputFunc('log10(')">log</button>
+                                    <button class="calc-btn" onclick="inputCalc('0')">0</button>
+                                    <button class="calc-btn" onclick="inputCalc('.')">.</button>
+                                    <button class="calc-btn equal" onclick="calculateResult()">=</button>
+                                </div>
+                            </div>
+                            
+                            <div class="calculator-sidebar">
+                                <div class="sidebar-tabs">
+                                    <button class="tab-btn active" onclick="switchCalcTab('stats')" data-i18n="calc_tab_stats">Статистика</button>
+                                    <button class="tab-btn" onclick="switchCalcTab('conv')" data-i18n="calc_tab_conv">Түрлендіру</button>
+                                </div>
+                                <div class="tab-content" id="calc-stats">
+                                    <div class="control-group">
+                                        <label data-i18n="calc_stats_input">Деректер (үтір арқылы):</label>
+                                        <textarea id="stats-input" class="form-control" placeholder="10, 20, 30.5, 40" rows="3"></textarea>
+                                    </div>
+                                    <div class="stats-results">
+                                        <div class="stat-row"><span>Mean (μ):</span> <strong id="stat-mean">-</strong></div>
+                                        <div class="stat-row"><span>Std Dev (σ):</span> <strong id="stat-sd">-</strong></div>
+                                        <div class="stat-row"><span>Variance (σ²):</span> <strong id="stat-var">-</strong></div>
+                                    </div>
+                                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="runStats()" data-i18n="calc_btn_run">Есептеу</button>
+                                </div>
+                                <div class="tab-content" id="calc-conv" style="display:none;">
+                                    <div class="control-group">
+                                        <label data-i18n="calc_conv_type">Түрі:</label>
+                                        <select id="conv-type" class="form-control" onchange="updateUnits()">
+                                            <option value="length">Length</option>
+                                            <option value="weight">Weight/Mass</option>
+                                            <option value="temp">Temperature</option>
+                                        </select>
+                                    </div>
+                                    <div class="conv-group">
+                                        <div class="conv-row">
+                                            <input type="number" id="conv-val1" class="form-control" placeholder="0" oninput="convert(1)">
+                                            <select id="conv-unit1" class="form-control" onchange="convert(1)"></select>
+                                        </div>
+                                        <div class="conv-equal">=</div>
+                                        <div class="conv-row">
+                                            <input type="number" id="conv-val2" class="form-control" placeholder="0" oninput="convert(2)">
+                                            <select id="conv-unit2" class="form-control" onchange="convert(2)"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Detail View: Publications -->
                 <div id="view-publications" class="detail-view">
@@ -534,6 +623,7 @@
     <script defer src="js/plagiarism.js"></script>
     <script defer src="js/publications.js"></script>
     <script defer src="js/settings.js"></script>
+    <script defer src="js/calculator.js"></script>
     <script defer src="js/main.js"></script>
 </body>
 
