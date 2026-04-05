@@ -21,7 +21,7 @@ function doPost(e) {
         result = authenticateUser(data.username, data.password);
         break;
       case 'ask_gemini':
-        result = { success: true, response: askGemini(data.prompt) };
+        result = { success: true, response: askGemini(data.prompt, data.lang) };
         break;
       case 'save_progress':
         result = saveProgress(data.username, data.progress);
@@ -33,13 +33,13 @@ function doPost(e) {
         result = getUserFiles(data.username);
         break;
       case 'search_projects':
-        result = { success: true, response: searchEnglishArticles(data.topic) };
+        result = { success: true, response: searchEnglishArticles(data.topic, data.lang) };
         break;
       case 'check_plagiarism':
-        result = checkPlagiarism(data.text);
+        result = checkPlagiarism(data.text, data.lang);
         break;
       default:
-        result = { success: false, message: "Белгісіз әрекет." };
+        result = { success: false, message: data.lang === 'kk' ? "Белгісіз әрекет." : (data.lang === 'ru' ? "Неизвестное действие." : "Unknown action.") };
     }
 
     return ContentService.createTextOutput(JSON.stringify(result))
@@ -133,11 +133,12 @@ function registerUser(username, password) {
 }
 
 
-function askGemini(prompt) {
+function askGemini(prompt, lang = 'kk') {
   const model = "gemma-3-27b-it";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
   
-  const systemInstruction = "Сен Ғылыми Зертхана (The Science Lab) платформасының интеллектуалды ассистентісің. Сенің мақсатың - қолданушыларға ғылыми мақалалар жазу, зерттеу әдістемесі, деректерді талдау және академиялық жазу бойынша көмек беру. Барлық жауаптарыңды мүмкіндігінше тек қазақ тілінде, сыпайы және кәсіби (академиялық) стильде бер. Егер саған ғылымға қатысты емес немесе әдепсіз сұрақ қойылса, қолданушыға сенің негізгі бағытың ғылыми зерттеулер екенін сыпайы ескертіп, сұрақты сол бағытқа бұруға тырыс. Жауаптарыңда маңызды бөліктерді қалың (bold) немесе тізім түрінде көрсет.";
+  const langName = lang === 'ru' ? 'Russian' : (lang === 'en' ? 'English' : 'Kazakh');
+  const systemInstruction = `You are the intelligent assistant of "The Science Lab" platform. Your goal is to help users with writing scientific papers, research methodology, data analysis, and academic writing. Please provide all your answers in ${langName}, in a polite and professional (academic) style. If you are asked an irrelevant or inappropriate question, politely remind the user that your main focus is scientific research and try to steer the question in that direction. In your answers, highlight important parts in bold or as a list.`;
 
   const payload = {
     contents: [
@@ -173,12 +174,12 @@ function askGemini(prompt) {
   }
 }
 
-function searchEnglishArticles(topic) {
+function searchEnglishArticles(topic, lang = 'kk') {
   const model = "gemma-3-27b-it";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
   
-  const systemInstruction = `Сен академиялық іздеу жүйесісің. Пайдаланушы берген тақырыпқа сәйкес келетін 5 нақты ағылшын тіліндегі ғылыми мақаланы тап. 
-Жауапты ТЕК қана мынадай форматтағы JSON массив түрінде қайтар, ешқандай артық мәтінсіз немесе блоктаушы таңбаларсыз (backticks):
+  const systemInstruction = `You are an academic search engine. Find 5 specific scientific articles in English that match the topic provided by the user. 
+Return the response ONLY as a JSON array in the following format, without any extra text or backticks:
 [
   {
     "title": "Article Title",
@@ -187,7 +188,7 @@ function searchEnglishArticles(topic) {
     "link": "URL to article"
   }
 ]
-Егер мақалалар табылса, тек осы JSON-ды қайтар.`;
+If articles are found, return only this JSON.`;
 
   const payload = {
     contents: [
@@ -295,26 +296,27 @@ function getUserFiles(username) {
   }
 }
 
-function checkPlagiarism(text) {
+function checkPlagiarism(text, lang = 'kk') {
   const model = "gemma-3-27b-it";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
   
-  const systemInstruction = `Сен академиялық антиплагиат маманысың. Берілген мәтінді бірегейлікке (оригинальность) талда. 
-Жауапты ТЕК қана мынадай форматтағы JSON түрінде қайтар, ешқандай артық мәтінсіз немесе блоктаушы таңбаларсыз (backticks):
+  const langName = lang === 'ru' ? 'Russian' : (lang === 'en' ? 'English' : 'Kazakh');
+  const systemInstruction = `You are an academic anti-plagiarism expert. Analyze the provided text for originality. 
+Return the response ONLY in JSON format, without any extra text or backticks:
 {
   "percentage": "80-90%",
-  "status": "ЖАҚСЫ",
+  "status": "GOOD",
   "tips": [
-    "Мәтінді жақсарту бойынша 1-ші академиялық кеңес (қазақша)",
-    "Мәтінді жақсарту бойынша 2-ші академиялық кеңес (қазақша)",
-    "Мәтінді жақсарту бойынша 3-ші академиялық кеңес (қазақша)"
+    "Academic tip 1 in ${langName}",
+    "Academic tip 2 in ${langName}",
+    "Academic tip 3 in ${langName}"
   ]
 }
-Ережелер:
-1. "percentage" - 10 пайыздық диапазон болсын.
-2. "status" - 80%+ "ЖАҚСЫ", 50-80% "ОРТАША", <50% "ТӨМЕН".
-3. "tips" - 3 нақты кеңес.
-4. Жауап тек қана JSON болуы тиіс.`;
+Rules:
+1. "percentage" - should be a 10% range.
+2. "status" - use ONE word in ${langName} equivalent to: 80%+ "GOOD", 50-80% "MEDIUM", <50% "LOW".
+3. "tips" - 3 concrete tips in ${langName}.
+4. The answer must be strictly JSON.`;
 
   const payload = {
     contents: [

@@ -89,16 +89,64 @@
             color: var(--text-secondary);
         }
 
-        .header-icons i {
-            font-size: 18px;
+        .header-user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             cursor: pointer;
-            transition: color 0.2s;
         }
 
-        .header-icons i:hover {
-            color: var(--primary-red);
+        .language-selector {
+            display: flex;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 6px;
+            padding: 3px;
         }
-        
+
+        body.dark-mode .language-selector {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.2s;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .lang-btn.active {
+            color: #fff;
+            background: var(--primary-red);
+        }
+
+        .icon-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            border-radius: 50%;
+        }
+
+        .icon-action-btn:hover {
+            color: var(--primary-red);
+            background: rgba(211, 47, 47, 0.05);
+        }
+
         .profile-small {
             width: 35px;
             height: 35px;
@@ -1413,6 +1461,7 @@
             line-height: 1;
             background: linear-gradient(to bottom, #fff, #ccc);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
         }

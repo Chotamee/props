@@ -43,14 +43,14 @@ function searchProjects() {
     resultsContainer.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
             <i class="fa-solid fa-flask-vial fa-spin" style="font-size: 40px; color: var(--primary-red); margin-bottom: 20px;"></i>
-            <div style="color: var(--text-primary); font-weight: 600; font-size: 16px;">Ғылыми мәліметтер ізделуде...</div>
-            <div style="color: var(--text-secondary); font-size: 13px; margin-top: 8px;">Модель тақырыбыңызды талдап жатыр.</div>
+            <div style="color: var(--text-primary); font-weight: 600; font-size: 16px;">${typeof t === 'function' ? t('search_loading') : 'Ғылыми мәліметтер ізделуде...'}</div>
+            <div style="color: var(--text-secondary); font-size: 13px; margin-top: 8px;">${typeof t === 'function' ? t('search_analyzing') : 'Модель тақырыбыңызды талдап жатыр.'}</div>
         </div>`;
 
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'search_projects', topic: topic })
+        body: JSON.stringify({ action: 'search_projects', topic: topic, lang: currentLang })
     })
         .then(response => response.json())
         .then(data => {
@@ -73,7 +73,7 @@ function searchProjects() {
                     articles = JSON.parse(responseText);
                 } catch (e) {
                     console.error("JSON Parse Error:", e, "Raw Data:", rawResponse);
-                    resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Мәліметтерді өңдеу кезінде қате орын алды (JSON Format).</div>';
+                    resultsContainer.innerHTML = `<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">${typeof t === 'function' ? t('search_err_parse') : 'Мәліметтерді өңдеу кезінде қате орын алды (JSON Format).'}</div>`;
                     return;
                 }
 
@@ -84,13 +84,13 @@ function searchProjects() {
                         card.className = 'project-card';
                         card.style.animationDelay = `${index * 0.1}s`;
                         card.innerHTML = `
-                            <h3 class="project-title">${art.title || 'Тақырыпсыз мақала'}</h3>
+                            <h3 class="project-title">${art.title || (typeof t === 'function' ? t('search_no_title') : 'Тақырыпсыз мақала')}</h3>
                             <div class="project-meta">
-                                <div class="meta-item"><i class="fa-solid fa-user-graduate"></i> <span>${art.authors || 'Белгісіз автор'}</span></div>
-                                <div class="meta-item"><i class="fa-solid fa-calendar-days"></i> <span>${art.year || 'Жыл көрсетілмеген'}</span></div>
+                                <div class="meta-item"><i class="fa-solid fa-user-graduate"></i> <span>${art.authors || (typeof t === 'function' ? t('search_no_author') : 'Белгісіз автор')}</span></div>
+                                <div class="meta-item"><i class="fa-solid fa-calendar-days"></i> <span>${art.year || (typeof t === 'function' ? t('search_no_year') : 'Жыл көрсетілмеген')}</span></div>
                             </div>
                             <a href="${art.link}" target="_blank" class="project-link">
-                                <span>Толық оқу</span>
+                                <span>${typeof t === 'function' ? t('search_read_more') : 'Толық оқу'}</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square"></i>
                             </a>
                         `;
@@ -98,11 +98,11 @@ function searchProjects() {
                     });
                 }
             } else {
-                resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Серверден мақала алу мүмкін болмады.</div>';
+                resultsContainer.innerHTML = `<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">${typeof t === 'function' ? t('search_err_fetch') : 'Серверден мақала алу мүмкін болмады.'}</div>`;
             }
         })
         .catch(error => {
-            resultsContainer.innerHTML = '<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">Желі қателігі орын алды.</div>';
+            resultsContainer.innerHTML = `<div style="grid-column: 1 / -1; color: var(--primary-red); text-align: center; padding: 40px;">${typeof t === 'function' ? t('search_err_network') : 'Желі қателігі орын алды.'}</div>`;
         });
 }
 
@@ -131,14 +131,14 @@ function sendQuery() {
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'ask_gemini', prompt: prompt })
+        body: JSON.stringify({ action: 'ask_gemini', prompt: prompt, lang: currentLang })
     })
         .then(response => response.json())
         .then(data => {
             const indicator = document.getElementById('typing-indicator-el');
             if (indicator) indicator.remove();
 
-            const textResponse = (data && data.success) ? data.response : ((data && data.message) ? data.message : "Жауап жоқ.");
+            const textResponse = (data && data.success) ? data.response : ((data && data.message) ? data.message : (typeof t === 'function' ? t('ai_no_response') : "Жауап жоқ."));
             const botMsg = document.createElement('div');
             botMsg.className = "chat-message bot-message";
             chatContainer.appendChild(botMsg);
@@ -151,7 +151,7 @@ function sendQuery() {
             const errorMsg = document.createElement('div');
             errorMsg.className = "chat-message bot-message";
             errorMsg.style.color = "red";
-            errorMsg.textContent = "Желі қателігі орын алды.";
+            errorMsg.textContent = typeof t === 'function' ? t('search_err_network') : "Желі қателігі орын алды.";
             chatContainer.appendChild(errorMsg);
         });
 }

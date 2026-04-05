@@ -1,10 +1,12 @@
 // --- AUTHENTICATION LOGIC ---
+let currentUser = null;
+let currentUserId = null;
 
 function toggleAuthMode() {
     isLoginMode = !isLoginMode;
-    document.getElementById('auth-title').innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
-    document.getElementById('auth-btn').innerText = isLoginMode ? 'Кіру' : 'Тіркелу';
-    document.getElementById('auth-toggle').innerText = isLoginMode ? 'Аккаунтыңыз жоқ па? Тіркелу' : 'Аккаунтыңыз бар ма? Кіру';
+    document.getElementById('auth-title').innerText = isLoginMode ? t('auth_title_login') : t('auth_btn_register');
+    document.getElementById('auth-btn').innerText = isLoginMode ? t('auth_btn_login') : t('auth_btn_register');
+    document.getElementById('auth-toggle').innerText = isLoginMode ? t('auth_toggle_register') : t('auth_toggle_login');
     document.getElementById('auth-msg').innerText = '';
 }
 
@@ -12,6 +14,12 @@ function openLogin() {
     document.getElementById('auth-username').value = '';
     document.getElementById('auth-password').value = '';
     document.getElementById('auth-msg').innerText = '';
+    
+    // Make sure texts reflect current language state correctly
+    document.getElementById('auth-title').innerText = isLoginMode ? t('auth_title_login') : t('auth_btn_register');
+    document.getElementById('auth-btn').innerText = isLoginMode ? t('auth_btn_login') : t('auth_btn_register');
+    document.getElementById('auth-toggle').innerText = isLoginMode ? t('auth_toggle_register') : t('auth_toggle_login');
+
     document.getElementById('view-login').style.display = 'flex';
 }
 
@@ -25,11 +33,11 @@ function handleAuth() {
     const msgBox = document.getElementById('auth-msg');
 
     if (!user || !pass) {
-        msgBox.innerText = "Барлық өрістерді толтырыңыз.";
+        msgBox.innerText = t('auth_err_fields');
         return;
     }
 
-    msgBox.innerText = "Күте тұрыңыз...";
+    msgBox.innerText = t('auth_wait');
     const action = isLoginMode ? 'login' : 'register';
 
     fetch(API_URL, {
@@ -37,27 +45,29 @@ function handleAuth() {
         headers: {
             'Content-Type': 'text/plain;charset=utf-8',
         },
-        body: JSON.stringify({ action: action, username: user, password: pass })
+        body: JSON.stringify({ action: action, username: user, password: pass, lang: currentLang })
     })
         .then(response => response.json())
         .then(data => onAuthResponse(data))
         .catch(error => {
             console.error("Fetch Error:", error);
-            msgBox.innerText = "Қате орын алды (Сервермен байланыс жоқ).";
+            msgBox.innerText = t('auth_err_server');
         });
 }
 
 function onAuthResponse(res) {
     if (res && res.success) {
+        currentUser = res.username;
+        currentUserId = res.id;
+
         // Save to auto-login
         localStorage.setItem('savedUsername', document.getElementById('auth-username').value.trim());
         localStorage.setItem('savedPassword', document.getElementById('auth-password').value.trim());
 
         document.getElementById('view-login').style.display = 'none';
-        document.getElementById('display-name').innerText = res.username || "Пайдаланушы";
-        const headerName = document.getElementById('header-display-name');
-        if (headerName) headerName.innerText = res.username || "Пайдаланушы";
-        if (res.id) document.getElementById('display-id').innerText = `ID: ${res.id}`;
+        
+        // Use a function to update UI names to ensure consistency
+        updateUserUI();
 
         if (res.progress && typeof res.progress === 'object' && !Array.isArray(res.progress)) {
             userMethodologyProgress = res.progress;
@@ -73,18 +83,28 @@ function onAuthResponse(res) {
         // Optimization: Fetch publications immediately to update badge
         if (typeof fetchUserPublications === 'function') fetchUserPublications();
     } else {
-        document.getElementById('auth-msg').innerText = (res && res.message) ? res.message : "Қате орын алды.";
+        document.getElementById('auth-msg').innerText = (res && res.message) ? res.message : t('auth_err_server');
     }
+}
+
+function updateUserUI() {
+    const nameStr = currentUser || t('user_default');
+    document.getElementById('display-name').innerText = nameStr;
+    const headerName = document.getElementById('header-display-name');
+    if (headerName) headerName.innerText = nameStr;
+
+    const idStr = currentUserId ? `${t('id_prefix')}${currentUserId}` : t('id_unknown');
+    document.getElementById('display-id').innerText = idStr;
 }
 
 function logout() {
     localStorage.removeItem('savedUsername');
     localStorage.removeItem('savedPassword');
+    currentUser = null;
+    currentUserId = null;
 
-    document.getElementById('display-name').innerText = "Пайдаланушы";
-    const headerName = document.getElementById('header-display-name');
-    if (headerName) headerName.innerText = "Пайдаланушы";
-    document.getElementById('display-id').innerText = "ID: Белгісіз";
+    updateUserUI();
+    
     document.getElementById('login-trigger-btn').style.display = 'block';
     document.getElementById('logout-btn').style.display = 'none';
 

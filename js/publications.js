@@ -30,20 +30,20 @@ if (fileInput) {
 
 function handleFileUpload(file) {
     const user = document.getElementById('display-name').innerText;
-    if (user === "Пайдаланушы" || !user) {
-        alert("Жүктеу үшін алдымен жеке кабинетіңізге кіріңіз!");
+    if (user === (typeof t === 'function' ? t('user_default') : "Пайдаланушы") || !user) {
+        alert(typeof t === 'function' ? t('pub_alert_login') : "Жүктеу үшін алдымен жеке кабинетіңізге кіріңіз!");
         return;
     }
 
     const status = document.getElementById('upload-status');
-    status.innerText = "Файл оқылуда...";
+    status.innerText = typeof t === 'function' ? t('pub_reading') : "Файл оқылуда...";
     status.style.color = '#ff9800';
 
     const reader = new FileReader();
     reader.onload = function (e) {
         const base64Data = e.target.result.split(',')[1];
 
-        status.innerText = "Файл бұлтқа жүктелуде. Күте тұрыңыз...";
+        status.innerText = typeof t === 'function' ? t('pub_uploading') : "Файл бұлтқа жүктелуде. Күте тұрыңыз...";
 
         fetch(API_URL, {
             method: 'POST',
@@ -59,17 +59,17 @@ function handleFileUpload(file) {
             .then(res => res.json())
             .then(data => {
                 if (data && data.success) {
-                    status.innerText = "Сәтті жүктелді!";
+                    status.innerText = typeof t === 'function' ? t('pub_success') : "Сәтті жүктелді!";
                     status.style.color = '#4caf50';
                     fetchUserPublications(true); 
                 } else {
-                    status.innerText = "Қате: " + (data.message || "Жүктеу мүмкін болмады.");
+                    status.innerText = (typeof t === 'function' ? t('auth_msg_prefix', 'Қате: ') : 'Қате: ') + (data.message || (typeof t === 'function' ? t('pub_err_upload') : "Жүктеу мүмкін болмады."));
                     status.style.color = 'var(--primary-red)';
                 }
             })
             .catch(err => {
                 console.error("Upload Error:", err);
-                status.innerText = "Байланыс қатесі.";
+                status.innerText = typeof t === 'function' ? t('pub_err_network') : "Байланыс қатесі.";
                 status.style.color = 'var(--primary-red)';
             });
     };
@@ -78,7 +78,7 @@ function handleFileUpload(file) {
 
 function fetchUserPublications(force = false) {
     const user = document.getElementById('display-name').innerText;
-    if (user === "Пайдаланушы" || !user) return;
+    if (user === (typeof t === 'function' ? t('user_default') : "Пайдаланушы") || !user) return;
 
     const listDiv = document.getElementById('files-list');
 
@@ -88,7 +88,7 @@ function fetchUserPublications(force = false) {
         return;
     }
 
-    if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: #777; padding: 20px;">Жүктелуде... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+    if (listDiv) listDiv.innerHTML = `<div style="text-align: center; color: #777; padding: 20px;">${typeof t === 'function' ? t('pub_loading') : 'Жүктелуде...'} <i class="fa-solid fa-spinner fa-spin"></i></div>`;
 
     fetch(API_URL, {
         method: 'POST',
@@ -103,13 +103,13 @@ function fetchUserPublications(force = false) {
                 updatePublicationsBadge(data.files.length);
             } else {
                 publicationsCache = [];
-                if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">Файлдар жүктелген жоқ.</div>';
+                if (listDiv) listDiv.innerHTML = `<div style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">${typeof t === 'function' ? t('pub_no_files') : 'Файлдар жүктелген жоқ.'}</div>`;
                 updatePublicationsBadge(0);
             }
         })
         .catch(err => {
             console.error("Fetch Files Error:", err);
-            if (listDiv) listDiv.innerHTML = '<div style="text-align: center; color: var(--primary-red); padding: 20px;">Деректерді алу мүмкін болмады.</div>';
+            if (listDiv) listDiv.innerHTML = `<div style="text-align: center; color: var(--primary-red); padding: 20px;">${typeof t === 'function' ? t('pub_err_fetch') : 'Деректерді алу мүмкін болмады.'}</div>`;
         });
 }
 
@@ -132,7 +132,8 @@ function renderFilesList(files) {
     } catch (e) { }
 
     files.forEach(f => {
-        const dateStr = new Date(f.timestamp).toLocaleDateString('kk-KZ', {
+        const langCode = currentLang === 'kk' ? 'kk-KZ' : (currentLang === 'ru' ? 'ru-RU' : 'en-US');
+        const dateStr = new Date(f.timestamp).toLocaleDateString(langCode, {
             year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
         });
 
@@ -152,7 +153,7 @@ function renderFilesList(files) {
                     <div class="file-date">${dateStr}</div>
                 </div>
             </div>
-            <a href="${f.url}" target="_blank" class="btn" style="text-decoration: none; padding: 6px 15px; font-size: 13px; width: auto;"><i class="fa-solid fa-download"></i> Жүктеу</a>
+            <a href="${f.url}" target="_blank" class="btn" style="text-decoration: none; padding: 6px 15px; font-size: 13px; width: auto;"><i class="fa-solid fa-download"></i> ${typeof t === 'function' ? t('pub_download') : 'Жүктеу'}</a>
         `;
         listDiv.appendChild(card);
     });

@@ -74,7 +74,7 @@ function renderInfographic() {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Деректер жиынтығы',
+                label: typeof t === 'function' ? t('chart_dataset') : 'Деректер жиынтығы',
                 data: values,
                 backgroundColor: isMulti ? pal.multi : pal.background,
                 borderColor: isMulti ? '#ffffff' : pal.border,

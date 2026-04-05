@@ -3,7 +3,7 @@ function checkPlagiarism() {
     if (!textArea) return;
     const text = textArea.value.trim();
     if (!text) {
-        alert("Мәтінді енгізіңіз!");
+        alert(typeof t === 'function' ? t('plag_alert_empty') : "Мәтінді енгізіңіз!");
         return;
     }
 
@@ -16,11 +16,11 @@ function checkPlagiarism() {
     const statusIndicator = document.querySelector('.status-indicator');
 
     btn.disabled = true;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ТАЛДАУ ЖАСАЛУДА...';
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> ${typeof t === 'function' ? t('plag_analyzing') : 'ТАЛДАУ ЖАСАЛУДА...'}`;
     percentDisplay.innerHTML = '<i class="fa-solid fa-sync fa-spin"></i>';
     percentDisplay.style.fontSize = '32px';
-    rangeText.innerText = 'Есептелуде...';
-    statusBadge.innerText = 'ІЗДЕУДЕ...';
+    rangeText.innerText = typeof t === 'function' ? t('plag_calculating') : 'Есептелуде...';
+    statusBadge.innerText = typeof t === 'function' ? t('plag_searching') : 'ІЗДЕУДЕ...';
     if (statusIndicator) statusIndicator.classList.add('active');
     
     if (scanRay) {
@@ -28,17 +28,17 @@ function checkPlagiarism() {
         scanRay.style.animation = 'scanMove 3s linear infinite';
     }
 
-    tipsList.innerHTML = '<div class="tip-placeholder"><i class="fa-solid fa-magnifying-glass-chart fa-beat"></i> AI мәтін құрылымын талдап жатыр...</div>';
+    tipsList.innerHTML = `<div class="tip-placeholder"><i class="fa-solid fa-magnifying-glass-chart fa-beat"></i> ${typeof t === 'function' ? t('plag_ai_analyzing') : 'AI мәтін құрылымын талдап жатыр...'}</div>`;
 
     fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'check_plagiarism', text: text })
+        body: JSON.stringify({ action: 'check_plagiarism', text: text, lang: currentLang })
     })
     .then(res => res.json())
     .then(data => {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> ТЕКСЕРУДІ БАСТАУ';
+        btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ${typeof t === 'function' ? t('plag_btn') : 'ТЕКСЕРУДІ БАСТАУ'}`;
         if (scanRay) scanRay.style.display = 'none';
         
         if (data.success) {
@@ -73,7 +73,7 @@ function checkPlagiarism() {
                     });
                 }
             } catch (e) {
-                tipsList.innerHTML = '<div class="tip-card-premium" style="border-color: var(--primary-red);"><div class="tip-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="tip-content">Сервер жауабын өңдеу мүмкін болмады.</div></div>';
+                tipsList.innerHTML = `<div class="tip-card-premium" style="border-color: var(--primary-red);"><div class="tip-icon"><i class="fa-solid fa-circle-exclamation"></i></div><div class="tip-content">${typeof t === 'function' ? t('plag_err_parse') : 'Сервер жауабын өңдеу мүмкін болмады.'}</div></div>`;
                 percentDisplay.innerText = '%';
             }
         } else {
@@ -83,9 +83,9 @@ function checkPlagiarism() {
     })
     .catch(e => {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-bolt"></i> ТЕКСЕРУДІ БАСТАУ';
+        btn.innerHTML = `<i class="fa-solid fa-bolt"></i> ${typeof t === 'function' ? t('plag_btn') : 'ТЕКСЕРУДІ БАСТАУ'}`;
         if (scanRay) scanRay.style.display = 'none';
-        tipsList.innerHTML = '<div class="tip-card-premium"><div class="tip-icon"><i class="fa-solid fa-wifi"></i></div><div class="tip-content">Желілік қате орын алды.</div></div>';
+        tipsList.innerHTML = `<div class="tip-card-premium"><div class="tip-icon"><i class="fa-solid fa-wifi"></i></div><div class="tip-content">${typeof t === 'function' ? t('plag_err_network') : 'Желілік қате орын алды.'}</div></div>`;
         percentDisplay.innerText = '%';
     });
 }

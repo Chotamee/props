@@ -20,12 +20,12 @@
                 <i class="fa-solid fa-times"
                     style="position: absolute; top: 15px; right: 20px; cursor: pointer; color: #777; font-size: 18px;"
                     onclick="closeLogin()"></i>
-                <h2 id="auth-title">Кіру</h2>
-                <input type="text" id="auth-username" class="login-input" placeholder="Логин (Username)">
-                <input type="password" id="auth-password" class="login-input" placeholder="Құпия сөз (Password)">
-                <button class="btn" style="border-radius: 8px;" id="auth-btn" onclick="handleAuth()">Кіру</button>
+                <h2 id="auth-title" data-i18n="auth_title_login">Кіру</h2>
+                <input type="text" id="auth-username" class="login-input" placeholder="Логин (Username)" data-i18n-placeholder="auth_ph_user">
+                <input type="password" id="auth-password" class="login-input" placeholder="Құпия сөз (Password)" data-i18n-placeholder="auth_ph_pass">
+                <button class="btn" style="border-radius: 8px;" id="auth-btn" onclick="handleAuth()" data-i18n="auth_btn_login">Кіру</button>
                 <div id="auth-msg" class="login-msg"></div>
-                <div class="toggle-auth" id="auth-toggle" onclick="toggleAuthMode()">Аккаунтыңыз жоқ па? Тіркелу</div>
+                <div class="toggle-auth" id="auth-toggle" onclick="toggleAuthMode()" data-i18n="auth_toggle_register">Аккаунтыңыз жоқ па? Тіркелу</div>
             </div>
         </div>
 
@@ -33,9 +33,15 @@
         <header class="top-header">
             <div class="logo-title">
                 <i class="fa-solid fa-bars mobile-menu-btn" onclick="toggleSidebar()"></i>
-                ҒЫЛЫМИ ЗЕРТТЕУ ТЕХНОЛОГИЯСЫ
+                <span data-i18n="app_title">ҒЫЛЫМИ ЗЕРТТЕУ ТЕХНОЛОГИЯСЫ</span>
             </div>
             <div class="header-icons">
+                <div class="language-selector">
+                    <button class="lang-btn active">ҚАЗ</button>
+                    <button class="lang-btn">РУС</button>
+                    <button class="lang-btn">ENG</button>
+                </div>
+                <button class="icon-action-btn" onclick="toggleDarkMode()" title="Түнгі режим"><i class="fa-solid fa-moon"></i></button>
                 <div class="header-user-info" onclick="showView('view-settings')">
                     <span class="header-username" id="header-display-name">Пайдаланушы</span>
                     <div class="profile-small"><i class="fa-solid fa-user"></i></div>
@@ -55,20 +61,17 @@
                     </div>
                     <!-- Dynamic based on login -->
                     <div class="profile-name" id="display-name">Пайдаланушы</div>
-                    <div class="profile-id" id="display-id" style="font-size: 11px; color: #777; margin-top: 5px;">ID:
-                        Белгісіз</div>
-                    <div class="logout-btn" id="logout-btn" onclick="logout()" style="display:none; margin-top: 10px;">
-                        Шығу (Logout)</div>
+                    <div class="profile-id" id="display-id" style="font-size: 11px; color: #777; margin-top: 5px;">ID: Белгісіз</div>
+                    <div class="logout-btn" id="logout-btn" onclick="logout()" style="display:none; margin-top: 10px;" data-i18n="btn_logout">الشығу (Logout)</div>
                     <div class="logout-btn" id="login-trigger-btn" onclick="openLogin()"
-                        style="margin-top: 10px; text-decoration: none; padding: 5px 10px; background: #fce4e4; border-radius: 5px; color: var(--primary-red);">
-                        Кіру / Тіркелу</div>
+                        style="margin-top: 10px; text-decoration: none; padding: 5px 10px; background: #fce4e4; border-radius: 5px; color: var(--primary-red);" data-i18n="btn_login_trigger">Кіру / Тіркелу</div>
                 </div>
 
                 <div class="nav-section">
-                    <div class="nav-title">МЕНІҢ ЖАРИЯЛАНЫМДАРЫМ</div>
+                    <div class="nav-title" data-i18n="header_pubs">МЕНІҢ ЖАРИЯЛАНЫМДАРЫМ</div>
                     <ul class="nav-list">
                         <li class="nav-item" onclick="showView('view-publications')" style="cursor: pointer;">
-                            <span><i class="fa-regular fa-file-lines"></i> Жарияланымдар</span>
+                            <span><i class="fa-regular fa-file-lines"></i> <span data-i18n="nav_pubs">Жарияланымдар</span></span>
                             <span class="badge" id="publications-badge">0</span>
                         </li>
                     </ul>
@@ -76,7 +79,7 @@
 
                 <div class="nav-section">
                     <ul class="nav-list">
-                        <li class="nav-item" onclick="showView('view-settings')"><span><i class="fa-solid fa-gear"></i> БАПТАУЛАР</span></li>
+                        <li class="nav-item" onclick="showView('view-settings')"><span><i class="fa-solid fa-gear"></i> <span data-i18n="nav_settings">БАПТАУЛАР</span></span></li>
                     </ul>
                 </div>
             </aside>
@@ -93,60 +96,60 @@
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-question"></i></div>
-                                <div class="module-title">Сұрақ орталығы</div>
-                                <div class="module-desc">Сұрақтарыңыз бен күмәндарыңызды шешіңіз.</div>
+                                <div class="module-title" data-i18n="title_query">Ғылыми кеңесші</div>
+                                <div class="module-desc" data-i18n="desc_query">Сұрақтарыңыз бен күмәндарыңызды шешіңіз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-query')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-query')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                         <!-- Card 2 -->
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-book-open"></i></div>
-                                <div class="module-title">Әдістемелік нұсқаулықтар</div>
-                                <div class="module-desc">Ғылыми жобалардың әдіснамасы туралы көбірек біліңіз.</div>
+                                <div class="module-title" data-i18n="title_methodology">Әдістемелік нұсқаулықтар</div>
+                                <div class="module-desc" data-i18n="desc_methodology">Ғылыми жобалардың әдіснамасы туралы көбірек біліңіз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-methodology')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-methodology')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                         <!-- Card 3 -->
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-folder-open"></i></div>
-                                <div class="module-title">Жобаларды іздеу</div>
-                                <div class="module-desc">Байланысты зерттеу жобаларын табыңыз.</div>
+                                <div class="module-title" data-i18n="title_search">Жобаларды іздеу</div>
+                                <div class="module-desc" data-i18n="desc_search">Байланысты зерттеу жобаларын табыңыз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-search')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-search')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                         <!-- Card 4 -->
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-percent"></i></div>
-                                <div class="module-title">Антиплагиат</div>
-                                <div class="module-desc">Мәтінді плагиатқа тексеріңіз.</div>
+                                <div class="module-title" data-i18n="title_plagiarism">Антиплагиат</div>
+                                <div class="module-desc" data-i18n="desc_plagiarism">Мәтінді плагиатқа тексеріңіз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-plagiarism')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-plagiarism')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                         <!-- Card 5 -->
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-chart-column"></i></div>
-                                <div class="module-title">Инфографика құру</div>
-                                <div class="module-desc">Кәсіби кестелер мен диаграммалар жасаңыз.</div>
+                                <div class="module-title" data-i18n="title_infographic">Инфографика құру</div>
+                                <div class="module-desc" data-i18n="desc_infographic">Кәсіби кестелер мен диаграммалар жасаңыз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-math')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-math')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                         <!-- Card 6 -->
                         <div class="module-card">
                             <div class="module-card-content">
                                 <div class="icon-circle"><i class="fa-solid fa-flask"></i></div>
-                                <div class="module-title">Эксперимент журналдары</div>
-                                <div class="module-desc">Деректерді жүктеп, эксперименттерді бақылаңыз.</div>
+                                <div class="module-title" data-i18n="title_experiments">Эксперимент журналдары</div>
+                                <div class="module-desc" data-i18n="desc_experiments">Деректерді жүктеп, эксперименттерді бақылаңыз.</div>
                             </div>
-                            <button class="btn" onclick="showView('view-coming-soon')">КІРУ</button>
+                            <button class="btn" onclick="showView('view-coming-soon')" data-i18n="btn_enter">КІРУ</button>
                         </div>
 
                     </div>
@@ -157,7 +160,7 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2 style="flex-grow: 1;">Сұрау орталығы</h2>
+                        <h2 style="flex-grow: 1;" data-i18n="header_query">Ғылыми кеңесші</h2>
                         <div class="font-controls">
                             <button class="font-btn" onclick="adjustChatFontSize(-1)">A-</button>
                             <button class="font-btn" onclick="adjustChatFontSize(1)">A+</button>
@@ -170,7 +173,7 @@
                             </div>
                         </div>
                         <div class="chat-input-area">
-                            <input type="text" id="gemini-prompt" class="form-control" placeholder="Мәтін енгізіңіз..." onkeypress="if(event.key === 'Enter') sendQuery()">
+                            <input type="text" id="gemini-prompt" class="form-control" placeholder="Мәтін енгізіңіз..." data-i18n-placeholder="chat_placeholder" onkeypress="if(event.key === 'Enter') sendQuery()">
                             <button class="send-btn" onclick="sendQuery()">
                                 <i class="fa-solid fa-paper-plane"></i>
                             </button>
@@ -183,15 +186,15 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Жобаларды іздеу</h2>
+                        <h2 data-i18n="header_search">Жобаларды іздеу</h2>
                     </div>
                     <div class="detail-content">
                         <div class="search-container">
-                            <div class="search-header-title">Тақырып бойынша мақалалар іздеу</div>
-                            <div class="search-header-desc">Зерттеуіңізге қатысты 5 ағылшынша мақаланы табу үшін тақырыпты енгізіңіз.</div>
+                            <div class="search-header-title" data-i18n="search_title">Тақырып бойынша мақалалар іздеу</div>
+                            <div class="search-header-desc" data-i18n="search_desc">Зерттеуіңізге қатысты 5 ағылшынша мақаланы табу үшін тақырыпты енгізіңіз.</div>
                             <div class="search-box">
-                                <input type="text" id="search-topic" class="form-control" placeholder="Мәселен: Artificial Intelligence in Medicine..." style="border-radius: 20px;">
-                                <button class="btn search-btn" onclick="searchProjects()">ІЗДЕУ</button>
+                                <input type="text" id="search-topic" class="form-control" placeholder="Artificial Intelligence in Medicine..." style="border-radius: 20px;" data-i18n-placeholder="search_ph_topic">
+                                <button class="btn search-btn" onclick="searchProjects()" data-i18n="search_btn">ІЗДЕУ</button>
                             </div>
                         </div>
                         <div id="search-results-container" class="search-results">
@@ -205,15 +208,15 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Ғылыми мақала жазу</h2>
+                        <h2 data-i18n="header_methodology">Ғылыми мақала жазу</h2>
                     </div>
                     <div class="detail-content">
                         <div class="step-list">
                             <!-- Step 1 -->
                             <div class="step-item" id="step-item-0" onclick="openCourse(0)">
                                 <div class="step-info">
-                                    <div class="step-title">1-қадам: Ашық мәселе құру</div>
-                                    <div class="step-desc">Ғылыми мақаланы құрыңыз және әдебиеттерге шолу жасаңыз.</div>
+                                    <div class="step-title" data-i18n="method_s1">1-қадам: Ашық мәселе құру</div>
+                                    <div class="step-desc" data-i18n="method_d1">Ғылыми мақаланы құрыңыз және әдебиеттерге шолу жасаңыз.</div>
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="progress-0" style="width: 0%;"></div>
                                     </div>
@@ -223,8 +226,8 @@
                             <!-- Step 2 -->
                             <div class="step-item" id="step-item-1" onclick="openCourse(1)">
                                 <div class="step-info">
-                                    <div class="step-title">2-қадам: Диссертация құру</div>
-                                    <div class="step-desc">Негізгі мақаланы құру үшін тиісті процестерді өлшеңіз.</div>
+                                    <div class="step-title" data-i18n="method_s2">2-қадам: Диссертация құру</div>
+                                    <div class="step-desc" data-i18n="method_d2">Негізгі мақаланы құру үшін тиісті процестерді өлшеңіз.</div>
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="progress-1" style="width: 0%;"></div>
                                     </div>
@@ -234,9 +237,8 @@
                             <!-- Step 3 -->
                             <div class="step-item" id="step-item-2" onclick="openCourse(2)">
                                 <div class="step-info">
-                                    <div class="step-title">3-қадам: Әдістемені жобалау</div>
-                                    <div class="step-desc">Негізгі модельдерді дайындаңыз және нақты схема құрыңыз.
-                                    </div>
+                                    <div class="step-title" data-i18n="method_s3">3-қадам: Әдістемені жобалау</div>
+                                    <div class="step-desc" data-i18n="method_d3">Негізгі модельдерді дайындаңыз және нақты схема құрыңыз.</div>
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="progress-2" style="width: 0%;"></div>
                                     </div>
@@ -246,8 +248,8 @@
                             <!-- Step 4 -->
                             <div class="step-item" id="step-item-3" onclick="openCourse(3)">
                                 <div class="step-info">
-                                    <div class="step-title">4-қадам: Жобаны жазу</div>
-                                    <div class="step-desc">Ғылыми мақала жасау үшін алғашқы жобаны жазыңыз.</div>
+                                    <div class="step-title" data-i18n="method_s4">4-қадам: Жобаны жазу</div>
+                                    <div class="step-desc" data-i18n="method_d4">Ғылыми мақала жасау үшін алғашқы жобаны жазыңыз.</div>
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="progress-3" style="width: 0%;"></div>
                                     </div>
@@ -257,9 +259,8 @@
                             <!-- Step 5 -->
                             <div class="step-item" id="step-item-4" onclick="openCourse(4)">
                                 <div class="step-info">
-                                    <div class="step-title">5-қадам: Өңдеу және пішімдеу</div>
-                                    <div class="step-desc">Соңғы өңдеулерді аяқтаңыз және стандартты пішімдеуді
-                                        қолданыңыз.</div>
+                                    <div class="step-title" data-i18n="method_s5">5-қадам: Өңдеу және пішімдеу</div>
+                                    <div class="step-desc" data-i18n="method_d5">Соңғы өңдеулерді аяқтаңыз және стандартты пішімдеуді қолданыңыз.</div>
                                     <div class="progress-bar">
                                         <div class="progress-fill" id="progress-4" style="width: 0%;"></div>
                                     </div>
@@ -312,46 +313,46 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Антиплагиат</h2>
+                        <h2 data-i18n="title_plagiarism">Антиплагиат</h2>
                     </div>
                     <div class="detail-content plagiarism-layout">
                         <div class="plagiarism-card mainland">
                             <div class="header-with-status">
                                 <div>
-                                    <div class="main-card-title">МӘТІНДІ ТЕКСЕРУ</div>
-                                    <div class="main-card-desc">Төмендегі өріске мәтініңізді қойыңыз (макс. 5000 таңба).</div>
+                                    <div class="main-card-title" data-i18n="plag_card_title">МӘТІНДІ ТЕКСЕРУ</div>
+                                    <div class="main-card-desc" data-i18n="plag_card_desc">Төмендегі өріске мәтініңізді қойыңыз (макс. 5000 таңба).</div>
                                 </div>
                                 <div id="char-counter" style="font-size: 12px; color: var(--text-secondary);">0 / 5000</div>
                             </div>
                             <div class="textarea-container">
-                                <textarea id="plagiarism-text-area" class="form-control" placeholder="Мәтінді осы жерге енгізіңіз немесе көшіріп қойыңыз..." 
+                                <textarea id="plagiarism-text-area" class="form-control" placeholder="Мәтінді осы жерге енгізіңіз немесе көшіріп қойыңыз..." data-i18n-placeholder="chat_placeholder"
                                     oninput="document.getElementById('char-counter').innerText = this.value.length + ' / 5000'"></textarea>
                                 <div id="scanning-ray"></div>
                             </div>
                             <button class="btn btn-primary-red check-btn-premium" id="plag-check-btn" onclick="checkPlagiarism()">
-                                <i class="fa-solid fa-bolt"></i> ТЕКСЕРУДІ БАСТАУ
+                                <i class="fa-solid fa-bolt"></i> <span data-i18n="plag_btn">ТЕКСЕРУДІ БАСТАУ</span>
                             </button>
                         </div>
 
                         <div class="sidebar-plagiarism">
                             <!-- Premium Score Card -->
                             <div class="score-card-premium">
-                                <div class="score-header">ОРИГИНАЛДЫҚ</div>
+                                <div class="score-header" data-i18n="plag_score">ОРИГИНАЛДЫҚ</div>
                                 <div class="score-value" id="plag-percent-display">%</div>
                                 <div class="score-range" id="plag-range-text">---</div>
                                 <div class="status-indicator">
                                     <span class="status-dot"></span>
-                                    <span id="plag-status-badge">КҮТУДЕ...</span>
+                                    <span id="plag-status-badge" data-i18n="plag_status">КҮТУДЕ...</span>
                                 </div>
                             </div>
 
                             <!-- AI Insights Section -->
                             <div class="insights-container">
                                 <div class="insights-title">
-                                    <i class="fa-solid fa-wand-magic-sparkles"></i> AI КЕҢЕСТЕРІ
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="plag_ai_tips">AI КЕҢЕСТЕРІ</span>
                                 </div>
                                 <div id="plag-tips-list" class="tips-stack">
-                                    <div class="tip-placeholder">Мәтінді талдау нәтижесі осында пайда болады.</div>
+                                    <div class="tip-placeholder"></div>
                                 </div>
                             </div>
                         </div>
@@ -363,32 +364,32 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Инфографика конструкторы</h2>
+                        <h2 data-i18n="header_infographics">Инфографика конструкторы</h2>
                     </div>
                     <div class="detail-content">
                         <div class="infographic-editor">
                             <div class="editor-controls">
                                 <div class="control-group">
-                                    <label>Деректердің атауы (Labels)</label>
-                                    <input type="text" id="infographic-labels" class="form-control" placeholder="Алма, Алмұрт, Шие" value="A, B, C, D" oninput="renderInfographic()">
+                                    <label data-i18n="info_labels">Деректердің атауы (Labels)</label>
+                                    <input type="text" id="infographic-labels" class="form-control" placeholder="Алма, Алмұрт, Шие" value="A, B, C, D" data-i18n-placeholder="info_ph_labels" oninput="renderInfographic()">
                                 </div>
                                 <div class="control-group">
-                                    <label>Мәндері (Values)</label>
-                                    <input type="text" id="infographic-values" class="form-control" placeholder="10, 20, 30" value="45, 25, 60, 30" oninput="renderInfographic()">
+                                    <label data-i18n="info_values">Мәндері (Values)</label>
+                                    <input type="text" id="infographic-values" class="form-control" placeholder="10, 20, 30" value="45, 25, 60, 30" data-i18n-placeholder="info_ph_values" oninput="renderInfographic()">
                                 </div>
                                 
                                 <div class="control-group">
-                                    <label>Диаграмма түрі</label>
+                                    <label data-i18n="info_type">Диаграмма түрі</label>
                                     <div class="chart-type-grid">
-                                        <button class="type-btn active" id="btn-type-bar" onclick="setChartType('bar')"><i class="fa-solid fa-chart-bar"></i> Баған</button>
-                                        <button class="type-btn" id="btn-type-line" onclick="setChartType('line')"><i class="fa-solid fa-chart-line"></i> Сызық</button>
-                                        <button class="type-btn" id="btn-type-pie" onclick="setChartType('pie')"><i class="fa-solid fa-chart-pie"></i> Дөңгелек</button>
-                                        <button class="type-btn" id="btn-type-radar" onclick="setChartType('radar')"><i class="fa-solid fa-circle-nodes"></i> Радар</button>
+                                        <button class="type-btn active" id="btn-type-bar" onclick="setChartType('bar')"><i class="fa-solid fa-chart-bar"></i> <span data-i18n="info_type_bar">Баған</span></button>
+                                        <button class="type-btn" id="btn-type-line" onclick="setChartType('line')"><i class="fa-solid fa-chart-line"></i> <span data-i18n="info_type_line">Сызық</span></button>
+                                        <button class="type-btn" id="btn-type-pie" onclick="setChartType('pie')"><i class="fa-solid fa-chart-pie"></i> <span data-i18n="info_type_pie">Дөңгелек</span></button>
+                                        <button class="type-btn" id="btn-type-radar" onclick="setChartType('radar')"><i class="fa-solid fa-circle-nodes"></i> <span data-i18n="info_type_radar">Радар</span></button>
                                     </div>
                                 </div>
 
                                 <div class="control-group">
-                                    <label>Түстер палитрасы</label>
+                                    <label data-i18n="info_palette">Түстер палитрасы</label>
                                     <div class="palette-grid">
                                         <button class="palette-btn active" id="btn-pal-professional" style="background: #d32f2f;" onclick="setPalette('professional')"></button>
                                         <button class="palette-btn" id="btn-pal-corporate" style="background: #1976d2;" onclick="setPalette('corporate')"></button>
@@ -399,7 +400,7 @@
 
                                 <div class="download-action">
                                     <button class="btn" style="width: 100%;" onclick="downloadInfographic()">
-                                        <i class="fa-solid fa-download"></i> PNG жүктеп алу
+                                        <i class="fa-solid fa-download"></i> <span data-i18n="info_btn_dl">PNG жүктеп алу</span>
                                     </button>
                                 </div>
                             </div>
@@ -416,7 +417,7 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Менің жарияланымдарым</h2>
+                        <h2 data-i18n="header_pubs">Менің жарияланымдарым</h2>
                     </div>
                     <!-- Content Area for Publications -->
                     <div class="detail-content"
@@ -426,14 +427,14 @@
                         <div class="publications-actions">
                             <div class="upload-area-compact" id="upload-area">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <span>Файлды осында сүйреңіз немесе <span
+                                <span><span data-i18n="pubs_drag">Файлды осында сүйреңіз немесе</span> <span
                                         onclick="document.getElementById('file-input').click()"
-                                        style="color: var(--primary-red); cursor: pointer; font-weight: bold; text-decoration: underline;">таңдаңыз</span></span>
+                                        style="color: var(--primary-red); cursor: pointer; font-weight: bold; text-decoration: underline;" data-i18n="pubs_select">таңдаңыз</span></span>
                                 <input type="file" id="file-input" style="display: none;">
                             </div>
                             <button class="btn btn-secondary" onclick="manualRefreshPublications()"
                                 style="width: auto; height: 100%; display: flex; align-items: center; gap: 8px; background: #eee; color: #333; border: 1px solid #ccc;">
-                                <i class="fa-solid fa-rotate"></i> Жаңарту
+                                <i class="fa-solid fa-rotate"></i> <span data-i18n="pubs_refresh">Жаңарту</span>
                             </button>
                         </div>
                         <div id="upload-status"
@@ -442,13 +443,12 @@
                         <!-- Files List -->
                         <div>
                             <h3
-                                style="margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;">
+                                style="margin-bottom: 15px; font-size: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;" data-i18n="pubs_list">
                                 Файлдар тізімі</h3>
                             <div class="files-list" id="files-list">
                                 <!-- Populated dynamically -->
                                 <div
                                     style="text-align: center; color: var(--text-secondary); padding: 30px; font-size: 14px;">
-                                    Файлдар жүктелген жоқ.
                                 </div>
                             </div>
                         </div>
@@ -460,14 +460,14 @@
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i
                                 class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Әзірленуде</h2>
+                        <h2 data-i18n="header_comingsoon">Әзірленуде</h2>
                     </div>
                     <div class="detail-content" style="display: flex; align-items: center; justify-content: center;">
                         <div style="text-align: center; color: var(--text-secondary);">
                             <i class="fa-solid fa-person-digging"
                                 style="font-size: 50px; margin-bottom: 20px; color: var(--primary-red);"></i>
-                            <h3>Жақында</h3>
-                            <p>Бұл модуль әзірлену үстінде.</p>
+                            <h3 data-i18n="comingsoon_title">Жақында</h3>
+                            <p data-i18n="comingsoon_desc">Бұл модуль әзірлену үстінде.</p>
                         </div>
                     </div>
                 </div>
@@ -475,14 +475,14 @@
                 <div id="view-settings" class="detail-view">
                     <div class="detail-header">
                         <button class="back-btn" onclick="showView('view-dashboard')"><i class="fa-solid fa-arrow-left"></i></button>
-                        <h2>Баптаулар</h2>
+                        <h2 data-i18n="header_settings">Баптаулар</h2>
                     </div>
                     <div class="detail-content">
                         <div class="settings-list">
                             <div class="settings-card">
                                 <div class="settings-info">
-                                    <h4>Түнгі режим</h4>
-                                    <p>Интерфейс түсін күңгіртке ауыстыру</p>
+                                    <h4 data-i18n="set_darkmode">Түнгі режим</h4>
+                                    <p data-i18n="set_darkmode_desc">Интерфейс түсін күңгіртке ауыстыру</p>
                                 </div>
                                 <label class="toggle-switch">
                                     <input type="checkbox" id="dark-mode-switch" onchange="toggleDarkMode()">
@@ -492,25 +492,25 @@
 
                             <div class="settings-card">
                                 <div class="settings-info">
-                                    <h4>Чат шрифті</h4>
-                                    <p>Сұрақ орталығындағы мәтін өлшемі</p>
+                                    <h4 data-i18n="set_font">Чат шрифті</h4>
+                                    <p data-i18n="set_font_desc">Сұрақ орталығындағы мәтін өлшемі</p>
                                 </div>
                                 <select class="form-control" style="width: 120px;" id="setting-chat-font" onchange="updateChatFontSizeFromSetting(this.value)">
-                                    <option value="0">Кіші</option>
-                                    <option value="1" selected>Орташа</option>
-                                    <option value="2">Үлкен</option>
-                                    <option value="3">Өте үлкен</option>
+                                    <option value="0">А-</option>
+                                    <option value="1" selected>A</option>
+                                    <option value="2">A+</option>
                                 </select>
                             </div>
 
                             <div class="settings-card">
                                 <div class="settings-info">
-                                    <h4>Тіл (Language)</h4>
-                                    <p>Интерфейс тілін таңдаңыз</p>
+                                    <h4 data-i18n="set_lang">Тіл (Language)</h4>
+                                    <p data-i18n="set_lang_desc">Интерфейс тілін таңдаңыз</p>
                                 </div>
-                                <select class="form-control" style="width: 120px;">
+                                <select id="setting-lang-select" class="form-control" style="width: 120px;" onchange="setLanguage(this.value)">
                                     <option value="kk" selected>Қазақ тілі</option>
-                                    <option value="en">English (Coming Soon)</option>
+                                    <option value="ru">Русский</option>
+                                    <option value="en">English</option>
                                 </select>
                             </div>
                         </div>
@@ -525,6 +525,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Modular JS loading without render block (lazy loading for Course Data managed internally) -->
+    <script defer src="js/lang.js"></script>
     <script defer src="js/config.js"></script>
     <script defer src="js/ui.js"></script>
     <script defer src="js/auth.js"></script>
