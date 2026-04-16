@@ -1917,3 +1917,105 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* --- PHOTO CALCULATOR STYLES --- */
+        .photo-calc-container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .photo-upload-zone {
+            border: 3px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        body.dark-mode .photo-upload-zone {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: #444;
+        }
+
+        .photo-upload-zone:hover {
+            border-color: var(--primary-red);
+            background: #fce4e466;
+            transform: scale(1.01);
+        }
+
+        .photo-upload-zone i {
+            font-size: 60px;
+            color: var(--primary-red);
+            filter: drop-shadow(0 4px 10px rgba(211, 47, 47, 0.2));
+        }
+
+        .photo-upload-zone span {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .preview-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .result-card-premium {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow-md);
+            border-left: 5px solid var(--primary-red);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        body.dark-mode .result-card-premium {
+            background: #2d2d2d;
+            border-color: var(--primary-red);
+        }
+
+        .result-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .result-body-text {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre-line;
+        }
+
+        .loading-spinner-red {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(211, 47, 47, 0.1);
+            border-left-color: var(--primary-red);
+            border-radius: 50%;
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
