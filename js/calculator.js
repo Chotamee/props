@@ -1,150 +1,147 @@
-// --- SCIENTIFIC CALCULATOR LOGIC ---
+// --- PHOTO CALCULATOR LOGIC (GEMMA 4 / GEMINI VISION) ---
 
-let calcExpression = '';
-let lastResult = null;
+let selectedPhotoBase64 = null;
+let selectedPhotoMime = null;
 
-function inputCalc(val) {
-    const display = document.getElementById('calc-formula');
-    calcExpression += val;
-    display.innerText = calcExpression;
-}
+/**
+ * Handle image selection from file input
+ */
+function handlePhotoSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-function inputFunc(func) {
-    const display = document.getElementById('calc-formula');
-    calcExpression += func;
-    display.innerText = calcExpression;
-}
+    selectedPhotoMime = file.type;
+    const reader = new FileReader();
 
-function clearCalc() {
-    calcExpression = '';
-    document.getElementById('calc-formula').innerText = '';
-    document.getElementById('calc-result').innerText = '0';
-}
-
-function backspaceCalc() {
-    calcExpression = calcExpression.slice(0, -1);
-    document.getElementById('calc-formula').innerText = calcExpression;
-}
-
-function calculateResult() {
-    try {
-        // Pre-process for math functions
-        let processed = calcExpression
-            .replace(/sin\(/g, 'Math.sin(')
-            .replace(/cos\(/g, 'Math.cos(')
-            .replace(/tan\(/g, 'Math.tan(')
-            .replace(/log10\(/g, 'Math.log10(')
-            .replace(/π/g, 'Math.PI');
-
-        // Note: Math functions in JS take radians. 
-        // We could add degree support, but scientific is usually radians or explicitly converted.
+    // Show loading or UI transition if needed
+    reader.onload = function(e) {
+        selectedPhotoBase64 = e.target.result.split(',')[1];
+        document.getElementById('photo-preview').src = e.target.result;
         
-        const result = eval(processed);
-        document.getElementById('calc-result').innerText = Number.isInteger(result) ? result : result.toFixed(6);
-        lastResult = result;
-    } catch (e) {
-        document.getElementById('calc-result').innerText = 'Error';
+        // UI Transitions
+        document.getElementById('photo-preview-container').style.display = 'block';
+        document.getElementById('photo-drop-zone').style.display = 'none';
+        document.getElementById('photo-result-container').style.display = 'none';
+        
+        // Smooth scroll to preview
+        document.getElementById('photo-preview-container').scrollIntoView({ behavior: 'smooth' });
+    };
+    reader.readAsDataURL(file);
+}
+
+/**
+ * Reset the photo calculator state
+ */
+function clearPhoto() {
+    selectedPhotoBase64 = null;
+    selectedPhotoMime = null;
+    document.getElementById('photo-input').value = '';
+    document.getElementById('photo-preview-container').style.display = 'none';
+    document.getElementById('photo-drop-zone').style.display = 'flex';
+    document.getElementById('photo-result-container').style.display = 'none';
+    document.getElementById('photo-loading').style.display = 'none';
+}
+
+/**
+ * Send the image to the backend for AI processing
+ */
+function solvePhotoProblem() {
+    if (!selectedPhotoBase64) {
+        alert(t('calc_err_no_img'));
+        return;
     }
-}
 
-// --- STATISTICS ---
-function runStats() {
-    const input = document.getElementById('stats-input').value;
-    const nums = input.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
+    // Update UI state
+    document.getElementById('photo-loading').style.display = 'block';
+    document.getElementById('photo-result-container').style.display = 'none';
+    const solveBtn = document.getElementById('solve-btn');
+    if (solveBtn) solveBtn.disabled = true;
 
-    if (nums.length === 0) return;
+    const payload = {
+        action: 'solve_photo',
+        base64: selectedPhotoBase64,
+        mimeType: selectedPhotoMime,
+        lang: currentLang
+    };
 
-    const mean = nums.reduce((a, b) => a + b) / nums.length;
-    const variance = nums.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / nums.length;
-    const sd = Math.sqrt(variance);
-
-    document.getElementById('stat-mean').innerText = mean.toFixed(4);
-    document.getElementById('stat-var').innerText = variance.toFixed(4);
-    document.getElementById('stat-sd').innerText = sd.toFixed(4);
-}
-
-// --- CONVERSIONS ---
-const units = {
-    length: { mm: 1, cm: 10, m: 1000, km: 1000000, inch: 25.4, ft: 304.8 },
-    weight: { mg: 1, g: 1000, kg: 1000000, oz: 28349.5, lb: 453592 },
-    temp: { c: 'c', f: 'f', k: 'k' }
-};
-
-function updateUnits() {
-    const type = document.getElementById('conv-type').value;
-    const u1 = document.getElementById('conv-unit1');
-    const u2 = document.getElementById('conv-unit2');
-    
-    u1.innerHTML = '';
-    u2.innerHTML = '';
-    
-    for (let u in units[type]) {
-        u1.options.add(new Option(u, u));
-        u2.options.add(new Option(u, u));
-    }
-    
-    if (u2.options.length > 1) u2.selectedIndex = 1;
-    convert(1);
-}
-
-function convert(source) {
-    const type = document.getElementById('conv-type').value;
-    const val1 = parseFloat(document.getElementById('conv-val1').value);
-    const val2 = parseFloat(document.getElementById('conv-val2').value);
-    const unit1 = document.getElementById('conv-unit1').value;
-    const unit2 = document.getElementById('conv-unit2').value;
-
-    if (type === 'temp') {
-        let celsius;
-        const v = source === 1 ? val1 : val2;
-        const from = source === 1 ? unit1 : unit2;
-        const to = source === 1 ? unit2 : unit1;
-
-        if (isNaN(v)) return;
-
-        if (from === 'c') celsius = v;
-        else if (from === 'f') celsius = (v - 32) * 5/9;
-        else celsius = v - 273.15;
-
-        let res;
-        if (to === 'c') res = celsius;
-        else if (to === 'f') res = (celsius * 9/5) + 32;
-        else res = celsius + 273.15;
-
-        if (source === 1) document.getElementById('conv-val2').value = res.toFixed(2);
-        else document.getElementById('conv-val1').value = res.toFixed(2);
+    fetch(API_URL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('photo-loading').style.display = 'none';
+        if (solveBtn) solveBtn.disabled = false;
         
-    } else {
-        const factor1 = units[type][unit1];
-        const factor2 = units[type][unit2];
-        
-        if (source === 1) {
-            if (isNaN(val1)) return;
-            document.getElementById('conv-val2').value = (val1 * factor1 / factor2).toFixed(4);
+        if (data && data.success) {
+            const resultText = document.getElementById('photo-result-text');
+            // We use innerHTML if we want to support markdown-like formatting or simple replacement
+            // For safety and simplicity, we'll use innerText but we can handle basic bolding
+            resultText.innerHTML = formatAIResponse(data.response);
+            
+            document.getElementById('photo-result-container').style.display = 'block';
+            
+            // Scroll to result
+            setTimeout(() => {
+                document.getElementById('photo-result-container').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
         } else {
-            if (isNaN(val2)) return;
-            document.getElementById('conv-val1').value = (val2 * factor2 / factor1).toFixed(4);
+            alert(t('auth_msg_prefix') + (data.message || "Unknown error"));
         }
-    }
+    })
+    .catch(err => {
+        console.error("Photo Solve Error:", err);
+        document.getElementById('photo-loading').style.display = 'none';
+        if (solveBtn) solveBtn.disabled = false;
+        alert(t('auth_err_server'));
+    });
 }
 
-function switchCalcTab(tab) {
-    document.querySelectorAll('.calculator-sidebar .tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.calculator-sidebar .tab-content').forEach(c => c.style.display = 'none');
-    
-    if (tab === 'stats') {
-        document.querySelector('.tab-btn[onclick*="stats"]').classList.add('active');
-        document.getElementById('calc-stats').style.display = 'block';
-    } else {
-        document.querySelector('.tab-btn[onclick*="conv"]').classList.add('active');
-        document.getElementById('calc-conv').style.display = 'block';
+/**
+ * Simple formatter for AI response (handles bold and newlines)
+ */
+function formatAIResponse(text) {
+    if (!text) return "";
+    // Replace **bold** with <strong>bold</strong>
+    let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    // Replace * bullet points
+    formatted = formatted.replace(/^\*\s(.*)/gm, '<li>$1</li>');
+    // Wrap lists if they exist
+    if (formatted.includes('<li>')) {
+        // This is a very basic wrapper, real markdown parser would be better
+        // but for a single-purpose tool, this works for common AI styles.
     }
+    return formatted;
 }
 
-// Init units on load
+// Add Drag & Drop support
 document.addEventListener('DOMContentLoaded', () => {
-    // Only if view exists
-    if (document.getElementById('conv-type')) {
-        updateUnits();
+    const dropZone = document.getElementById('photo-drop-zone');
+    if (!dropZone) return;
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handlePhotoSelect({ target: { files: files } });
+    }, false);
 });
