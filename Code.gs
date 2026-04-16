@@ -38,6 +38,9 @@ function doPost(e) {
       case 'check_plagiarism':
         result = checkPlagiarism(data.text, data.lang);
         break;
+      case 'solve_photo':
+        result = solveMathProblemFromImage(data.base64, data.mimeType, data.lang);
+        break;
       default:
         result = { success: false, message: data.lang === 'kk' ? "Белгісіз әрекет." : (data.lang === 'ru' ? "Неизвестное действие." : "Unknown action.") };
     }
@@ -134,7 +137,7 @@ function registerUser(username, password) {
 
 
 function askGemini(prompt, lang = 'kk') {
-  const model = "gemma-3-27b-it";
+  const model = "gemma-4-31b-it";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
   
   const langName = lang === 'ru' ? 'Russian' : (lang === 'en' ? 'English' : 'Kazakh');
@@ -347,6 +350,60 @@ Rules:
       let errMsg = "AI жауап бере алмады.";
       if (json.error) errMsg += " API Error: " + json.error.message;
       else if (json.promptFeedback) errMsg += " Blocked by safety filters.";
+      return { success: false, message: errMsg };
+    }
+  } catch (e) {
+    return { success: false, message: "Network Error: " + e.toString() };
+  }
+}
+
+function solveMathProblemFromImage(base64Data, mimeType, lang = 'kk') {
+  // Using gemini-1.5-flash for vision capabilities
+  const model = "gemini-1.5-flash"; 
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+  
+  const langName = lang === 'ru' ? 'Russian' : (lang === 'en' ? 'English' : 'Kazakh');
+  const systemInstruction = `You are a professional mathematician and scientist. Analyze the provided image, which contains a math equation, physics problem, or scientific query. 
+  Provide a detailed, step-by-step solution in ${langName}. 
+  Format your answer cleanly using markdown: bold text for key results, bullet points for steps, and possibly LaTeX-like formatting (without $ signs, just plain text) for clarity. 
+  If the image is unclear or doesn't contain a solvable problem, politely ask the user to provide a clearer photo.`;
+
+  const payload = {
+    contents: [
+      {
+        parts: [
+          { text: systemInstruction },
+          {
+            inlineData: {
+              mimeType: mimeType,
+              data: base64Data
+            }
+          }
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.4,
+      maxOutputTokens: 2048,
+    }
+  };
+
+  const options = {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(url, options);
+    const json = JSON.parse(response.getContentText());
+    
+    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
+      return { success: true, response: json.candidates[0].content.parts[0].text };
+    } else {
+      let errMsg = "AI жауап бере алмады.";
+      if (json.error) errMsg += " API Error: " + json.error.message;
       return { success: false, message: errMsg };
     }
   } catch (e) {
